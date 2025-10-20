@@ -1,0 +1,226 @@
+{
+  "placeholderImages": [
+    {
+      "id": "landing-hero",
+      "description": "A futuristic UI showing a document being transformed by AI, with glowing nodes and data streams.",
+      "imageUrl": "https://picsum.photos/seed/futuristic-ui/800/600",
+      "imageHint": "AI interface"
+    },
+    {
+      "id": "use-case-hero",
+      "description": "A diverse team collaborating in a modern office, with holographic interfaces showing data visualizations floating around them.",
+      "imageUrl": "https://picsum.photos/seed/team-collab-ai/800/700",
+      "imageHint": "team collaboration"
+    },
+    {
+      "id": "team-collab-hero",
+      "description": "A close up of a team working on a document on a large touch screen, with AI annotations appearing.",
+      "imageUrl": "https://picsum.photos/seed/teamwork-screen/800/700",
+      "imageHint": "team screen"
+    },
+    {
+      "id": "feature-visualize",
+      "description": "A complex data table in a document morphing into a beautiful, interactive 3D chart.",
+      "imageUrl": "https://picsum.photos/seed/data-viz/600/400",
+      "imageHint": "data visualization"
+    },
+    {
+      "id": "feature-secure",
+      "description": "A digital document securely locked inside a futuristic, glowing vault.",
+      "imageUrl": "https://picsum.photos/seed/secure-vault/600/400",
+      "imageHint": "secure vault"
+    },
+    {
+      "id": "feature-collaborate",
+      "description": "Multiple user avatars collaborating on a single document, connected by glowing lines of data.",
+      "imageUrl": "https://picsum.photos/seed/glowing-network/600/400",
+      "imageHint": "glowing network"
+    },
+    {
+      "id": "how-it-works-1",
+      "description": "A user uploading a document with a simple drag and drop.",
+      "imageUrl": "https://picsum.photos/seed/upload-step/500/300",
+      "imageHint": "upload cloud"
+    },
+    {
+      "id": "how-it-works-2",
+      "description": "An AI brain icon scanning the document to analyze its content.",
+      "imageUrl": "https://picsum.photos/seed/analyze-step/500/300",
+      "imageHint": "AI brain"
+    },
+    {
+      "id": "how-it-works-3",
+      "description": "A user interacting with the AI, asking questions and getting insights.",
+      "imageUrl": "https://picsum.photos/seed/interact-step/500/300",
+      "imageHint": "chat interface"
+    },
+    {
+      "id": "doc-thumb-1",
+      "description": "Thumbnail for a financial report document.",
+      "imageUrl": "https://picsum.photos/seed/2/400/566",
+      "imageHint": "document report"
+    },
+    {
+      "id": "doc-thumb-2",
+      "description": "Thumbnail for a legal contract document.",
+      "imageUrl": "https://picsum.photos/seed/3/400/566",
+      "imageHint": "document contract"
+    },
+    {
+      "id": "doc-thumb-3",
+      "description": "Thumbnail for a project proposal document.",
+      "imageUrl": "https://picsum.photos/seed/4/400/566",
+      "imageHint": "document proposal"
+    },
+    {
+      "id": "doc-thumb-4",
+      "description": "Thumbnail for a marketing brochure document.",
+      "imageUrl": "https://picsum.photos/seed/5/400/566",
+      "imageHint": "document brochure"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "Avatar for user Alice Johnson.",
+      "imageUrl": "https://picsum.photos/seed/101/40/40",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "user-avatar-2",
+      "description": "Avatar for user Bob Williams.",
+      "imageUrl": "https://picsum.photos/seed/102/40/40",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "user-avatar-3",
+      "description": "Avatar for user Charlie Brown.",
+      "imageUrl": "https://picsum.photos/seed/103/40/40",
+      "imageHint": "man smiling"
+    },
+    {
+      "id": "editor-page",
+      "description": "Placeholder for a PDF page in the editor.",
+      "imageUrl": "https://picsum.photos/seed/201/800/1131",
+      "imageHint": "text document"
+    },
+    {
+      "id": "testimonial-avatar-1",
+      "description": "Avatar for testimonial user Sarah.",
+      "imageUrl": "https://picsum.photos/seed/111/80/80",
+      "imageHint": "professional woman"
+    },
+    {
+      "id": "testimonial-avatar-2",
+      "description": "Avatar for testimonial user Michael.",
+      "imageUrl": "https://picsum.photos/seed/112/80/80",
+      "imageHint": "man in suit"
+    },
+    {
+      "id": "testimonial-avatar-3",
+      "description": "Avatar for testimonial user Emily.",
+      "imageUrl": "https://picsum.photos/seed/113/80/80",
+      "imageHint": "woman creative"
+    },
+    {
+      "id": "testimonial-avatar-4",
+      "description": "Avatar for testimonial user David.",
+      "imageUrl": "https://picsum.photos/seed/114/80/80",
+      "imageHint": "tech lead"
+    },
+    {
+      "id": "testimonial-avatar-5",
+      "description": "Avatar for testimonial user Jessica.",
+      "imageUrl": "https://picsum.photos/seed/115/80/80",
+      "imageHint": "financial analyst"
+    },
+    {
+      "id": "testimonial-avatar-6",
+      "description": "Avatar for Dr. Alistair Finch.",
+      "imageUrl": "https://picsum.photos/seed/116/80/80",
+      "imageHint": "research scientist"
+    },
+    {
+      "id": "testimonial-avatar-7",
+      "description": "Avatar for Maria Garcia.",
+      "imageUrl": "https://picsum.photos/seed/117/80/80",
+      "imageHint": "nonprofit director"
+    },
+    {
+      "id": "testimonial-avatar-8",
+      "description": "Avatar for Kenji Tanaka.",
+      "imageUrl": "https://picsum.photos/seed/118/80/80",
+      "imageHint": "architect portrait"
+    },
+    {
+      "id": "testimonial-avatar-9",
+      "description": "Avatar for Olivia Davis.",
+      "imageUrl": "https://picsum.photos/seed/119/80/80",
+      "imageHint": "startup ceo"
+    },
+    {
+      "id": "testimonial-avatar-10",
+      "description": "Avatar for Ben Carter.",
+      "imageUrl": "https://picsum.photos/seed/120/80/80",
+      "imageHint": "ux designer"
+    },
+    {
+      "id": "testimonial-avatar-11",
+      "description": "Avatar for Dr. Isabelle Moreau.",
+      "imageUrl": "https://picsum.photos/seed/121/80/80",
+      "imageHint": "medical researcher"
+    },
+    {
+      "id": "testimonial-avatar-12",
+      "description": "Avatar for Samuel Jones.",
+      "imageUrl": "https://picsum.photos/seed/122/80/80",
+      "imageHint": "university professor"
+    },
+    {
+      "id": "testimonial-avatar-13",
+      "description": "Avatar for Chloe Kim.",
+      "imageUrl": "https://picsum.photos/seed/123/80/80",
+      "imageHint": "fashion designer"
+    },
+    {
+      "id": "testimonial-avatar-14",
+      "description": "Avatar for Liam O'Connell.",
+      "imageUrl": "https://picsum.photos/seed/124/80/80",
+      "imageHint": "construction manager"
+    },
+    {
+      "id": "testimonial-avatar-15",
+      "description": "Avatar for Fatima Al-Jamil.",
+      "imageUrl": "https://picsum.photos/seed/125/80/80",
+      "imageHint": "government official"
+    },
+    {
+      "id": "testimonial-avatar-16",
+      "description": "Avatar for Tom H.",
+      "imageUrl": "https://picsum.photos/seed/126/80/80",
+      "imageHint": "logistics coordinator"
+    },
+    {
+      "id": "testimonial-avatar-17",
+      "description": "Avatar for Rachel L.",
+      "imageUrl": "https://picsum.photos/seed/127/80/80",
+      "imageHint": "event planner"
+    },
+    {
+      "id": "testimonial-avatar-18",
+      "description": "Avatar for Carlos S.",
+      "imageUrl": "https://picsum.photos/seed/128/80/80",
+      "imageHint": "chef"
+    },
+    {
+      "id": "testimonial-avatar-19",
+      "description": "Avatar for Priya N.",
+      "imageUrl": "https://picsum.photos/seed/129/80/80",
+      "imageHint": "software qa"
+    },
+    {
+      "id": "testimonial-avatar-20",
+      "description": "Avatar for James P.",
+      "imageUrl": "https://picsum.photos/seed/130/80/80",
+      "imageHint": "consultant"
+    }
+  ]
+}

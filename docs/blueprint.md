@@ -1,0 +1,146 @@
+# **App Name**: DocuMind AI
+
+## Core Features:
+
+- AI Memory Threads: Maintain conversation context with AI for each document using a tool.
+- Team Roles with AI Permissions: Control AI tool usage based on team roles.
+- Audit Log & Data Privacy: Display data AI processed for transparency.
+- Local-First Mode: Process OCR/summarization locally.
+- Smart Auto-Fix: Detect and automatically fix formatting inconsistencies.
+- AI Visual Mode: Turn data-heavy PDFs into charts & summaries using an AI tool.
+- AI Personalization / User Profiles: Allow users to save default AI tool preferences.
+- AI Legal Checker: Scan contracts for risky or missing clauses using a tool.
+- AI Policy Compliance Check: Detect GDPR, HIPAA, or ISO clause violations using a tool.
+- AI Math Solver in PDFs: Detect equations and solve or explain them using a tool.
+- Smart Citation Extractor: Pull citations and auto-generate a reference list (APA, MLA, Chicago).
+- Content Validation Engine: Detect fake data, outdated numbers, or contradictory statements using a tool and web context.
+- Cross-Reference Validation: AI checks if page references actually exist and link correctly using a tool.
+- Smart Grid Alignment: Auto-align inserted text/images/shapes for pixel-perfect layout.
+- Theme Templates: Apply design themes to PDFs (colors, fonts, margins).
+- AI Layout Designer: Generate visually appealing report layouts or slide-style designs from text-heavy docs using a tool.
+- Interactive Elements: Add clickable buttons, checkboxes, dropdowns, and form logic (for interactive PDFs).
+- AI Image Enhancement: Auto-upscale or clean inserted images using a tool.
+- Parallel Loading Threads: Load pages simultaneously for lightning-fast performance.
+- Lazy Load AI Responses: Stream AI summaries in real time instead of waiting for full completion.
+- Auto Save Checkpoints: Every edit creates a diff-based snapshot for rollback.
+- Dynamic Pagination View: "Flow mode" (like reading a web article) or "Fixed page" (classic PDF).
+- Team Chat in Docs: Real-time chat tied to the PDF being edited.
+- Smart Task Links: Assign tasks directly to document regions (“Review this section”).
+- AI Meeting Summaries: If teams discuss a document, record & auto-summarize the meeting context using a tool.
+- Version Comments Diff: Show what comments were resolved or left open per version.
+- Auto-Secure Links: Share-only links that auto-expire or require OTP.
+- AI-Generated Share Notes: When sharing, AI adds “summary of changes” note automatically using a tool.
+- Time-Locked Docs: Share PDFs that expire or become read-only after a set time.
+- AI Rewrite by Section Type: Rewrite differently if it’s a header, clause, or caption using a tool.
+- AI Voice Explanation: Click a paragraph → “Explain this verbally” using a tool.
+- AI Visual Summary: Converts long reports into infographic slides (PDF → mini-deck) using a tool.
+- AI Fact Checker: Verifies statements with latest info from the web using a tool.
+- AI Adaptive Reading Mode: Simplifies content readability based on user level using a tool.
+- AI Emotion Tone Analyzer: Detect sentiment/tone in business or legal writing using a tool.
+- AI Style Harmonizer: Make multi-author documents consistent in tone and formatting using a tool.
+- AI Reviewer Mode: AI reviews your doc like a teacher/editor/lawyer, leaving inline feedback using a tool.
+- AI Personal Tutor Mode: For study PDFs — explain each section like a teacher.
+- Multi-Region Data Residency: Choose EU, US, or Asia-based servers.
+- Custom Embedding SDK: Third parties embed your editor with their branding.
+- GraphQL + WebSocket API: Real-time sync and query for enterprise integration.
+- Custom AI Plug-ins: Let devs upload their own AI model or OCR plugin.
+- Command Center Dashboard: Admins track users, AI usage, and compliance reports.
+- Team-Level Analytics: Who edited, summarized, or generated what content.
+- Auto-Naming Engine: AI auto-generates descriptive file names using a tool.
+- Smart Folder Sorting: AI groups PDFs by topic, company, or project using a tool.
+- Duplicate Finder: Detects duplicate PDFs (even renamed or slightly changed).
+- File Fingerprint System: Hash-based detection for security or forensics.
+- AI Archive Mode: Summarizes and archives old docs automatically using a tool.
+- Multi-Voice Narration: Read PDFs aloud in multiple accents/languages.
+- Accessibility AI Assistant: Automatically describes visuals for blind users using a tool.
+- Gesture-Driven Editing: Mobile gestures like double-tap to highlight or draw.
+- Voice-Driven Navigation: "Go to page 23," "Highlight paragraph 2."
+- User Achievement System: Reward badges (“First AI Summary,” “Power User”).
+- AI Mood Interface: Subtle color shifts depending on user focus/time of day using a tool.
+- AI Reminder System: “You left 2 PDFs unfinished — want me to summarize them?” using a tool.
+- Smart User Onboarding: Adaptive tutorials based on user skill (beginner → pro).
+- User Learning Analytics: For educational users — track how much content they’ve understood.
+- Credit-Based AI Economy: Users earn tokens via activity or referral.
+- Premium AI Plugins Marketplace: Community-created add-ons sold inside your platform.
+- AI Power-Ups: Pay-per-use heavy tasks (like large OCR or visual summaries).
+- Usage Cap Notifications: Gentle nudges before hitting free tier limits.
+- Team Billing: Multi-seat management with unified invoice.
+- Accessibility Tools: Text-to-speech, high contrast mode, screen reader optimization, auto alt-text for images.
+- PDF Edit: editing pdf files, such as text
+- PDF Sign: ability to sign PDF files
+- PDF View: ability to view PDF files
+- PDF View - Details: Smooth scrolling & pagination; Multi-tab viewing (open multiple PDFs at once); Thumbnail sidebar for page previews; Bookmarks & Table of Contents navigation; Zoom, rotate, and fit-to-screen modes; Dark mode + Auto-theme detection; WebAssembly rendering (pdf.js, MuPDF.js, or pdfium) for speed; Incremental loading for large PDFs (stream chunks); GPU acceleration for zoom/pan performance; Lazy loading & smart caching (preload next/prev pages); Context-aware toolbar (view mode changes based on document type); Annotation preview toggle (show/hide comments & highlights); Accessibility support (screen readers, keyboard shortcuts, narration); Touch gestures (pinch zoom, swipe, stylus draw for tablets)
+- PDF Edit - Details: Text editing (replace, reflow, change font & color); Image insertion, resizing, rotation; Shape tools (lines, rectangles, arrows, circles); Annotation tools (highlight, underline, strikethrough, sticky notes); Header & footer editor (add page numbers, timestamps, logos); Watermark insertion & editing; Merge, split, reorder, rotate, delete pages; Crop, resize, compress PDFs; OCR text recognition for scanned/image-based PDFs; Replace existing text while preserving style; Add or edit hyperlinks; Form field editing (input boxes, checkboxes, dropdowns, signatures); Smart form autofill (auto-fill names, dates, etc.); Drag & drop page reordering; Inline AI editor (rewrite selected text or clauses directly) using a tool; Undo/Redo with full version history; Smart layout alignment (auto grid & snapping); Real-time co-editing & track changes; Audit logs and version comparison
+- PDF Sign - Details: Draw, type, or upload signature; Saved signature templates/styles; Multi-signer support (invite others to sign); Signature timestamps & verification; Digital certificate support (X.509 / PKCS #12); Biometric signature option (pressure/stylus-based); Offline signing (works without internet); Signature field detection (auto-detects where to sign); Role-based signing (approver, viewer, signer); Timestamped digital audit trail; Document integrity check after signing (verify if modified); Optional 2FA for signing; Encrypted signature data (E2E encryption); Integration with DocuSign / HelloSign (optional plugin); Watermark or “digitally verified” label after signing
+- File-to-PDF Conversion: Image to PDF — Convert JPG, PNG, HEIC, or TIFF into high-quality PDFs (with auto-rotation & margin detection).
+- File-to-PDF Conversion: Word to PDF — Convert .doc / .docx documents while preserving formatting, hyperlinks, and tables.
+- File-to-PDF Conversion: Excel to PDF — Convert spreadsheets into well-formatted PDFs with grid preservation and print scaling options.
+- File-to-PDF Conversion: PowerPoint to PDF — Convert .ppt / .pptx presentations with transitions, images, and vector fidelity.
+- File-to-PDF Conversion: HTML to PDF — Render full webpages into PDFs (with or without CSS/JS).
+- File-to-PDF Conversion: Text / Markdown to PDF — Convert .txt or .md with basic layout support.
+- File-to-PDF Conversion: Email to PDF — Import .eml or Gmail/Outlook messages and convert to PDF with attachments embedded.
+- File-to-PDF Conversion: Photo to PDF (Mobile Optimized) — Auto-detect document edges from camera photo and flatten for clean PDF scans.
+- File-to-PDF Conversion: Scanner to PDF (via mobile camera or webcam) — Use device camera to scan documents directly into PDF (auto-enhance, shadow removal, de-skew).
+- File-to-PDF Conversion: Batch Convert — Drop multiple files (any type) and auto-convert each to PDF or merge them all into one.
+- PDF-to-Other Formats: PDF to Word (.docx) — Editable Word conversion with layout & font retention.
+- PDF-to-Other Formats: PDF to Excel (.xlsx) — Extract tables into editable spreadsheets.
+- PDF-to-Other Formats: PDF to PowerPoint (.pptx) — Turn pages into editable slides.
+- PDF-to-Other Formats: PDF to Image (JPG/PNG/SVG) — Export individual pages or entire PDFs as high-res images.
+- PDF-to-Other Formats: PDF to Text (.txt) — Extract plain text (OCR-supported).
+- PDF-to-Other Formats: PDF to HTML — Convert back into responsive, structured HTML for reuse.
+- PDF-to-Other Formats: PDF to JSON/CSV — Extract structured data for developer use or automation workflows.
+- PDF-to-Other Formats: PDF to ePub — For ebook or digital reading conversion.
+- PDF-to-Other Formats: Batch Export — Convert multiple PDFs into different formats simultaneously.
+- Enhanced Creation Tools: Create Blank PDF — Start from scratch with page layout editor.
+- Enhanced Creation Tools: Combine Multiple Files — Merge Word, Excel, images, and PDFs into a single document.
+- Enhanced Creation Tools: Webpage Snapshot to PDF — Paste any URL and generate a stylized PDF snapshot (great for archiving).
+- Enhanced Creation Tools: Screenshot-to-PDF — Capture on-screen content or window and directly save to PDF.
+- Enhanced Creation Tools: Clipboard-to-PDF — Paste copied content (text/image) and instantly convert to a PDF.
+- Enhanced Creation Tools: Voice-to-Text PDF — Dictate content and auto-generate PDF documents.
+- Enhanced Creation Tools: AI Layout Generator — Create PDF templates (flyers, contracts, resumes) from plain-text prompts.
+- AI-Augmented Conversion Tools: Smart Auto-Detect — AI detects document type (invoice, ID card, form, receipt) and applies optimized layout.
+- AI-Augmented Conversion Tools: AI Layout Correction — Fix broken formatting after conversion (especially Word → PDF).
+- AI-Augmented Conversion Tools: Auto Background Clean-Up — Remove shadows, folds, or glare in scanned PDFs.
+- AI-Augmented Conversion Tools: AI Scan Enhancer — Improves photo scans with filters, brightness, and edge detection.
+- AI-Augmented Conversion Tools: Batch OCR Conversion — Automatically make all uploaded PDFs searchable & editable.
+- AI-Augmented Conversion Tools: AI Format Preserver — Keeps fonts, headers, and tables consistent when converting complex documents.
+- Export & Sharing: Export to Cloud — Save directly to Drive, Dropbox, OneDrive, Box, or Notion.
+- Export & Sharing: Share via Link — Generate instant, permission-based share links.
+- Export & Sharing: Export for Print — CMYK color profile, bleed, and trim mark support for professional printing.
+- Export & Sharing: Export with Watermark / Branding — “Made with [Your App Name]” watermark for free users.
+- Export & Sharing: Batch Download Options — Zip all exports with structured filenames.
+- Upload & Import: Users can upload PDFs from their device, drag-and-drop, or import directly from Drive, Dropbox, or URL.
+- Instant Rendering: Renders full PDF pages in real-time (no refresh) for in-browser editing.
+- Smart File Handling: Handles large PDFs (200+ pages) with lazy loading and smooth scrolling.
+- Auto Save Drafts: Any edit (text/image/form) is saved automatically to the user’s workspace.
+- Version Control: Every upload keeps a change history so users can revert to an earlier version.
+- Text Edit: Click on any text block to edit content directly (supports fonts, colors, alignment).
+- Add Text / Comments: Insert new text fields or sticky notes anywhere on the page.
+- Image Edit: Replace, move, resize, or crop embedded images.
+- Add Images: Drag and drop new images or logos directly onto the PDF.
+- Form Fill: Fill and save form fields (checkboxes, radio buttons, dropdowns, digital signatures).
+- Add Shapes: Rectangles, circles, arrows, or highlights.
+- Highlight / Underline / Strikethrough: For study, proofreading, or collaboration.
+- Page Tools: Add, reorder, rotate, delete, or duplicate pages.
+- Link Tools: Add clickable links to text or images.
+- Header & Footer Edit: Add or change page headers, footers, or page numbers.
+- Watermark Tool: Add or remove watermarks.
+- Background Tool: Add solid colors or background images.
+- AI Rewrite: Highlight text and click “AI Improve” to rewrite tone, grammar, or format.
+- AI Translate: Instantly translate selected text or entire document while keeping layout.
+- Save as New PDF: Keeps original untouched; creates an edited version.
+- Save Over Original: Option to overwrite file in place.
+- Export to Word / Image / HTML / TXT: After edits, export to other formats.
+- Shareable Link: Generate secure link to share the edited PDF.
+- Cloud Sync: Automatic sync to cloud storage or user’s account.
+
+## Style Guidelines:
+
+- Primary color: Deep teal (#008080) to reflect intelligence, trust, and document focus.
+- Background color: Very light teal (#F0FFFF), providing a calming, professional backdrop.
+- Accent color: Soft coral (#F08080) for highlights and calls to action, creating contrast and focus.
+- Body font: 'Inter', sans-serif.
+- Headline font: 'Space Grotesk', sans-serif, for headlines.
+- Use clean, modern icons to represent different document actions and AI features.
+- Design a clear and intuitive layout that allows users to focus on their documents with minimal distractions.
+- Subtle animations to guide users through the document editing process and provide feedback on AI actions.

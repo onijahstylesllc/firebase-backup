@@ -1,0 +1,842 @@
+
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the DocuMind AI application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the user."
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL to the user's profile picture.",
+          "format": "uri"
+        },
+        "aiPreferences": {
+          "type": "object",
+          "description": "User's AI tool preferences.",
+          "properties": {
+            "visualMode": {
+              "type": "boolean",
+              "description": "Whether the user has visual mode enabled for the AI assistant."
+            },
+            "role": {
+                "type": "string",
+                "description": "The user's professional role (e.g., Lawyer, Engineer)."
+            },
+            "tone": {
+                "type": "string",
+                "description": "The preferred tone for AI responses (e.g., Professional, Casual)."
+            },
+            "outputFormat": {
+                "type": "string",
+                "description": "The preferred output format for AI responses (e.g., Paragraphs, Bullets)."
+            }
+          }
+        },
+        "teamId": {
+          "type": "string",
+          "description": "Reference to Team. (Relationship: Team 1:N User)"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "name"
+      ]
+    },
+    "Team": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Team",
+      "type": "object",
+      "description": "Represents a team within the DocuMind AI application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the team."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the team."
+        },
+        "roleDefinitions": {
+          "type": "object",
+          "description": "Defines the permissions for different roles within the team.",
+          "properties": {
+            "admin": {
+              "type": "object",
+              "properties": { "canEdit": { "type": "boolean" }, "canComment": { "type": "boolean" }, "canManageTeam": { "type": "boolean" } }
+            },
+            "editor": {
+              "type": "object",
+              "properties": { "canEdit": { "type": "boolean" }, "canComment": { "type": "boolean" } }
+            },
+            "commenter": {
+              "type": "object",
+              "properties": { "canComment": { "type": "boolean" } }
+            },
+             "viewer": {
+              "type": "object",
+              "properties": { "canView": { "type": "boolean" } }
+            }
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Document": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Document",
+      "type": "object",
+      "description": "Represents a document (PDF, DOCX, etc.) within the DocuMind AI application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the document."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Document)"
+        },
+        "filename": {
+          "type": "string",
+          "description": "Original filename of the document."
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "Date and time the document was uploaded.",
+          "format": "date-time"
+        },
+        "fileSize": {
+          "type": "number",
+          "description": "Size of the document in bytes."
+        },
+        "contentType": {
+          "type": "string",
+          "description": "MIME type of the document (e.g., application/pdf, application/docx)."
+        },
+        "storageLocation": {
+          "type": "string",
+          "description": "Path or URL where the document is stored."
+        },
+        "imageUrls": {
+            "type": "array",
+            "description": "An array of URLs for images uploaded to this document.",
+            "items": {
+                "type": "string",
+                "format": "uri"
+            }
+        },
+        "processingStatus": {
+            "type": "string",
+            "description": "The status of any background job for this document (e.g., queued, in-progress, completed, failed).",
+            "enum": ["queued", "in-progress", "completed", "failed"]
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "filename",
+        "uploadDate",
+        "fileSize",
+        "contentType",
+        "storageLocation"
+      ]
+    },
+    "AiMemoryThread": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AiMemoryThread",
+      "type": "object",
+      "description": "Represents a conversation thread between a user and AI, associated with a specific document.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AI memory thread."
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Reference to Document. (Relationship: Document 1:N AiMemoryThread)"
+        },
+        "documentFilename": {
+          "type": "string",
+          "description": "Denormalized filename of the associated document for efficient querying."
+        },
+        "startTime": {
+          "type": "string",
+          "description": "Date and time the thread was started.",
+          "format": "date-time"
+        },
+        "lastActivityTime": {
+          "type": "string",
+          "description": "Date and time of the last activity in the thread.",
+          "format": "date-time"
+        },
+        "threadState": {
+          "type": "string",
+          "description": "The current state of this thread, example 'active' or 'archived'"
+        },
+        "isPinned": {
+          "type": "boolean",
+          "description": "Whether the user has pinned this conversation."
+        },
+        "badge": {
+          "type": "string",
+          "description": "A user-assigned badge for categorization."
+        }
+      },
+      "required": [
+        "id",
+        "documentId",
+        "startTime",
+        "lastActivityTime"
+      ]
+    },
+    "AiMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AiMessage",
+      "type": "object",
+      "description": "Represents a message within an AI memory thread.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AI message."
+        },
+        "aiMemoryThreadId": {
+          "type": "string",
+          "description": "Reference to AiMemoryThread. (Relationship: AiMemoryThread 1:N AiMessage)"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Date and time the message was sent.",
+          "format": "date-time"
+        },
+        "sender": {
+          "type": "string",
+          "description": "Indicates who sent the message ('user' or 'ai')."
+        },
+        "content": {
+          "type": "string",
+          "description": "The actual message content."
+        }
+      },
+      "required": [
+        "id",
+        "aiMemoryThreadId",
+        "timestamp",
+        "sender",
+        "content"
+      ]
+    },
+    "AuditEvent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AuditEvent",
+      "type": "object",
+      "description": "Represents an audit event logged for data processing transparency.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the audit event."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N AuditEvent)"
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Reference to Document. (Relationship: Document 1:N AuditEvent)"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Date and time the event occurred.",
+          "format": "date-time"
+        },
+        "eventType": {
+          "type": "string",
+          "description": "Type of the audit event (e.g., 'ai_summarization', 'ocr_performed', 'user_shared_document')."
+        },
+        "details": {
+          "type": "string",
+          "description": "JSON string containing details about the event (e.g., parameters used, results generated)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "documentId",
+        "timestamp",
+        "eventType",
+        "details"
+      ]
+    },
+    "Task": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Task",
+      "type": "object",
+      "description": "Represents a task assigned to a specific region of a document.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the task."
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Reference to Document. (Relationship: Document 1:N Task)"
+        },
+        "assigneeId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Task - Assignee)"
+        },
+        "creatorId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Task - Creator)"
+        },
+        "regionCoordinates": {
+          "type": "string",
+          "description": "JSON string representing the coordinates of the document region the task is associated with."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the task."
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the task (e.g., 'open', 'in_progress', 'completed')."
+        },
+        "dueDate": {
+          "type": "string",
+          "description": "Due date for the task.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "documentId",
+        "assigneeId",
+        "creatorId",
+        "regionCoordinates",
+        "description",
+        "status"
+      ]
+    },
+    "DocumentVersion": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DocumentVersion",
+      "type": "object",
+      "description": "Represents a specific version of a document, created upon each edit or auto-save.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the document version."
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Reference to Document. (Relationship: Document 1:N DocumentVersion)"
+        },
+        "versionNumber": {
+          "type": "number",
+          "description": "Incremental version number for the document."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Date and time the version was created.",
+          "format": "date-time"
+        },
+        "storageLocation": {
+          "type": "string",
+          "description": "Path or URL where this version of the document is stored."
+        },
+        "comment": {
+          "type": "string",
+          "description": "Optional comment describing the changes in this version."
+        }
+      },
+      "required": [
+        "id",
+        "documentId",
+        "versionNumber",
+        "timestamp",
+        "storageLocation"
+      ]
+    },
+    "Comment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Comment",
+      "type": "object",
+      "description": "Represents a comment added to a document, potentially associated with a specific version.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the comment."
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Reference to Document. (Relationship: Document 1:N Comment)"
+        },
+        "documentVersionId": {
+          "type": "string",
+          "description": "Reference to DocumentVersion. (Relationship: DocumentVersion 1:N Comment)"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Comment)"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Date and time the comment was created.",
+          "format": "date-time"
+        },
+        "content": {
+          "type": "string",
+          "description": "The actual comment text."
+        },
+        "resolved": {
+          "type": "boolean",
+          "description": "Indicates whether the comment has been resolved."
+        }
+      },
+      "required": [
+        "id",
+        "documentId",
+        "userId",
+        "timestamp",
+        "content",
+        "resolved"
+      ]
+    },
+    "ShareLink": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ShareLink",
+      "type": "object",
+      "description": "Represents a shared link for a document with specific permissions and expiration.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the share link."
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Reference to Document. (Relationship: Document 1:N ShareLink)"
+        },
+        "creatorId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N ShareLink - Creator)"
+        },
+        "link": {
+          "type": "string",
+          "description": "The actual shareable link URL."
+        },
+        "creationTime": {
+          "type": "string",
+          "description": "Date and time the link was created.",
+          "format": "date-time"
+        },
+        "expiryTime": {
+          "type": "string",
+          "description": "Date and time the link expires (optional).",
+          "format": "date-time"
+        },
+        "permissions": {
+          "type": "string",
+          "description": "JSON string representing the permissions granted by the link (e.g., view, edit, comment)."
+        },
+        "requiresOtp": {
+          "type": "boolean",
+          "description": "Indicates whether the link requires one-time password authentication."
+        }
+      },
+      "required": [
+        "id",
+        "documentId",
+        "creatorId",
+        "link",
+        "creationTime",
+        "permissions"
+      ]
+    },
+    "FileFingerprint": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FileFingerprint",
+      "type": "object",
+      "description": "Stores a cryptographic hash of a file for detecting duplicates or verifying file integrity.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the file fingerprint record."
+        },
+        "documentId": {
+          "type": "string",
+          "description": "Reference to Document. (Relationship: Document 1:1 FileFingerprint)"
+        },
+        "hashAlgorithm": {
+          "type": "string",
+          "description": "The hashing algorithm used (e.g., SHA-256)."
+        },
+        "hashValue": {
+          "type": "string",
+          "description": "The actual cryptographic hash of the file content."
+        }
+      },
+      "required": [
+        "id",
+        "documentId",
+        "hashAlgorithm",
+        "hashValue"
+      ]
+    },
+    "UsageCredit": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UsageCredit",
+      "type": "object",
+      "description": "Represents the credits a user has for using AI-powered features.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the usage credit record."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:1 UsageCredit)"
+        },
+        "creditBalance": {
+          "type": "number",
+          "description": "The current credit balance for the user."
+        },
+        "lastRefillDate": {
+          "type": "string",
+          "description": "The date and time the credit was last refilled.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "creditBalance"
+      ]
+    },
+    "Plugin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Plugin",
+      "type": "object",
+      "description": "Represents a custom AI plugin uploaded by a developer.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the plugin."
+        },
+        "developerId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Plugin - Developer)"
+        },
+        "pluginName": {
+          "type": "string",
+          "description": "Name of the plugin."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the plugin's functionality."
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "Date and time the plugin was uploaded.",
+          "format": "date-time"
+        },
+        "storageLocation": {
+          "type": "string",
+          "description": "Path or URL where the plugin code is stored."
+        },
+        "configurationSchema": {
+          "type": "string",
+          "description": "JSON schema describing the plugin's configuration options."
+        }
+      },
+      "required": [
+        "id",
+        "developerId",
+        "pluginName",
+        "uploadDate",
+        "storageLocation",
+        "configurationSchema"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Uses path-based ownership for private data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/teams/{teamId}",
+        "definition": {
+          "entityName": "Team",
+          "schema": {
+            "$ref": "#/backend/entities/Team"
+          },
+          "description": "Stores team information and role definitions.",
+          "params": [
+            {
+              "name": "teamId",
+              "description": "The unique identifier for the team."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/documents/{documentId}",
+        "definition": {
+          "entityName": "Document",
+          "schema": {
+            "$ref": "#/backend/entities/Document"
+          },
+          "description": "Stores documents owned by a specific user. Uses path-based ownership for data privacy.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "documentId",
+              "description": "The unique identifier for the document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/aiMemoryThreads/{aiMemoryThreadId}",
+        "definition": {
+          "entityName": "AiMemoryThread",
+          "schema": {
+            "$ref": "#/backend/entities/AiMemoryThread"
+          },
+          "description": "Stores AI memory threads associated with a specific user. This is a top-level collection under a user for performance.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "aiMemoryThreadId",
+              "description": "The unique identifier for the AI memory thread."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/aiMemoryThreads/{aiMemoryThreadId}/aiMessages/{aiMessageId}",
+        "definition": {
+          "entityName": "AiMessage",
+          "schema": {
+            "$ref": "#/backend/entities/AiMessage"
+          },
+          "description": "Stores AI messages within a specific AI memory thread. Inherits ownership from the parent thread.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "aiMemoryThreadId",
+              "description": "The unique identifier for the AI memory thread."
+            },
+            {
+              "name": "aiMessageId",
+              "description": "The unique identifier for the AI message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/auditEvents/{auditEventId}",
+        "definition": {
+          "entityName": "AuditEvent",
+          "schema": {
+            "$ref": "#/backend/entities/AuditEvent"
+          },
+          "description": "Stores audit events associated with a specific user. Uses path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "auditEventId",
+              "description": "The unique identifier for the audit event."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/documents/{documentId}/tasks/{taskId}",
+        "definition": {
+          "entityName": "Task",
+          "schema": {
+            "$ref": "#/backend/entities/Task"
+          },
+          "description": "Stores tasks associated with a specific document. Inherits ownership from the parent document.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "documentId",
+              "description": "The unique identifier for the document."
+            },
+            {
+              "name": "taskId",
+              "description": "The unique identifier for the task."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/documents/{documentId}/documentVersions/{documentVersionId}",
+        "definition": {
+          "entityName": "DocumentVersion",
+          "schema": {
+            "$ref": "#/backend/entities/DocumentVersion"
+          },
+          "description": "Stores document versions for a specific document. Inherits ownership from the parent document.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "documentId",
+              "description": "The unique identifier for the document."
+            },
+            {
+              "name": "documentVersionId",
+              "description": "The unique identifier for the document version."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/documents/{documentId}/comments/{commentId}",
+        "definition": {
+          "entityName": "Comment",
+          "schema": {
+            "$ref": "#/backend/entities/Comment"
+          },
+          "description": "Stores comments associated with a specific document. Inherits ownership from the parent document.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "documentId",
+              "description": "The unique identifier for the document."
+            },
+            {
+              "name": "commentId",
+              "description": "The unique identifier for the comment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/shareLinks/{shareLinkId}",
+        "definition": {
+          "entityName": "ShareLink",
+          "schema": {
+            "$ref": "#/backend/entities/ShareLink"
+          },
+          "description": "Stores share links for documents. This is a top-level collection to allow querying and management of share links across all users. Security rules must ensure that only authorized users can access and manage these links.",
+          "params": [
+            {
+              "name": "shareLinkId",
+              "description": "The unique identifier for the share link."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/fileFingerprints/{fileFingerprintId}",
+        "definition": {
+          "entityName": "FileFingerprint",
+          "schema": {
+            "$ref": "#/backend/entities/FileFingerprint"
+          },
+          "description": "Stores file fingerprints for duplicate detection and integrity verification.  This is a top-level collection for global uniqueness and searching. Security rules are critical to prevent unauthorized access.",
+          "params": [
+            {
+              "name": "fileFingerprintId",
+              "description": "The unique identifier for the file fingerprint."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/usageCredit",
+        "definition": {
+          "entityName": "UsageCredit",
+          "schema": {
+            "$ref": "#/backend/entities/UsageCredit"
+          },
+          "description": "Stores the usage credit balance for each user. Uses path-based ownership. One UsageCredit per user",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/plugins/{pluginId}",
+        "definition": {
+          "entityName": "Plugin",
+          "schema": {
+            "$ref": "#/backend/entities/Plugin"
+          },
+          "description": "Stores custom AI plugins uploaded by developers. This is a top-level collection to allow global discovery and management of plugins. Security rules must ensure that only authorized developers can upload plugins and that only authorized users can use them.",
+          "params": [
+            {
+              "name": "pluginId",
+              "description": "The unique identifier for the plugin."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to ensure security, scalability, and ease of debugging, following the principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters). Authorization Independence is achieved through denormalization of authorization data. Specifically, for any subcollection where access depends on the parent, relevant parent data (like team members or document owners) is copied into the subcollection documents.  Structural Segregation is used to ensure that each collection has a homogeneous security posture. Access modeling follows consistent patterns: path-based ownership for user-owned data (e.g., `/users/{userId}/documents/{documentId}`), and membership maps (`members: {uid1: 'role', uid2: 'role'}`) for collaborative data. The structure supports the required QAPs by using structural segregation to enable secure list operations. For example, documents are stored within user-specific collections, ensuring that listing documents only returns those accessible to the requesting user. UsageCredit is stored as a subcollection within the user document enabling easier access to the credit balance and also providing authorization independence and follows the principle of structural segregation."
+  }
+}

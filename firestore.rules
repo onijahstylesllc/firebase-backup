@@ -1,0 +1,322 @@
+/**
+ * @file Firestore Security Rules for DocuMind AI Application
+ * @version Prototyping
+ *
+ * @Core Philosophy
+ * This ruleset enforces a strict user-ownership model for private data nested under `/users/{userId}`.
+ * Top-level collections require either owner-based authorization or role-based authorization.
+ *
+ * @Data Structure
+ * - User profiles are stored under `/users/{userId}`.
+ * - Documents, AI memory threads, AI messages, audit events, tasks, document versions and comments are stored
+ *   under the user's document structure: `/users/{userId}/documents/{documentId}/...`.
+ * - Teams are stored under `/teams/{teamId}`.
+ * - Share links and file fingerprints are stored in top-level collections (`/shareLinks/{shareLinkId}` and `/fileFingerprints/{fileFingerprintId}`).
+ * - Usage credits are stored under `/users/{userId}/usageCredit`. There is only one usage credit record per user.
+ * - Plugins are stored under `/plugins/{pluginId}`.
+ *
+ * @Key Security Decisions
+ * - User listing is disallowed.
+ * - `get` operations on non-existent documents will reach the backend.
+ * - Write operations on non-existent documents are denied.
+ * - Strict ownership is enforced for user-scoped data.
+ *
+ * @Denormalization for Authorization
+ * - Subcollections inherit ownership from parent documents based on path structure.
+ *   For example, a document at `/users/{userId}/documents/{documentId}` is considered owned by `userId`.
+ *
+ * @Structural Segregation
+ * - Private user data is stored under `/users/{userId}`, while potentially public data (e.g., plugins, sharelinks, fileFingerprints) are stored in top-level collections.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Restricts access to user profiles. Only the owner can read or write their own profile.
+     * @path /users/{userId}
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to team documents.
+     * @path /teams/{teamId}
+     * @allow (get, list) if true;
+     * @allow (create) if isSignedIn();
+     * @allow (update, delete) if false; // TODO: Add team role based access.
+     * @principle Restricts creation to signed-in users, but allows public reads (get, list).
+     */
+    match /teams/{teamId} {
+       function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false; // TODO: Add team role based access.
+    }
+
+    /**
+     * @description Restricts access to documents owned by a specific user. Only the owner can read or write their documents.
+     * @path /users/{userId}/documents/{documentId}
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/documents/{documentId} {
+       function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId)/documents/$(documentId));
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to AI memory threads associated with a specific document. Only the document owner can access these threads.
+     * @path /users/{userId}/documents/{documentId}/aiMemoryThreads/{aiMemoryThreadId}
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Inherits ownership from the parent document and enforces it for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/aiMemoryThreads/{aiMemoryThreadId} {
+       function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId)/documents/$(documentId)/aiMemoryThreads/$(aiMemoryThreadId));
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to AI messages within a specific AI memory thread. Only the document owner can access these messages.
+     * @path /users/{userId}/documents/{documentId}/aiMemoryThreads/{aiMemoryThreadId}/aiMessages/{aiMessageId}
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Inherits ownership from the parent document and thread, enforcing it for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/aiMemoryThreads/{aiMemoryThreadId}/aiMessages/{aiMessageId} {
+       function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId)/documents/$(documentId)/aiMemoryThreads/$(aiMemoryThreadId)/aiMessages/$(aiMessageId));
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to audit events associated with a specific user. Only the owner can read or write their audit events.
+     * @path /users/{userId}/auditEvents/{auditEventId}
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/auditEvents/{auditEventId} {
+       function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId)/auditEvents/$(auditEventId));
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to tasks associated with a specific document. Only the document owner can access these tasks.
+     * @path /users/{userId}/documents/{documentId}/tasks/{taskId}
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Inherits ownership from the parent document and enforces it for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/tasks/{taskId} {
+       function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId)/documents/$(documentId)/tasks/$(taskId));
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to document versions for a specific document. Only the document owner can access these versions.
+     * @path /users/{userId}/documents/{documentId}/documentVersions/{documentVersionId}
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Inherits ownership from the parent document and enforces it for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/documentVersions/{documentVersionId} {
+       function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId)/documents/$(documentId)/documentVersions/$(documentVersionId));
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to comments associated with a specific document. Only the document owner can access these comments.
+     * @path /users/{userId}/documents/{documentId}/comments/{commentId}
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Inherits ownership from the parent document and enforces it for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/comments/{commentId} {
+       function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId)/documents/$(documentId)/comments/$(commentId));
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to share links.
+     * @path /shareLinks/{shareLinkId}
+     * @allow (get, list) if false;  // TODO: Add link-based authentication or creator-based access.
+     * @allow (create) if isSignedIn();
+     * @allow (update, delete) if false;  // TODO: Add creator-based access.
+     * @principle  Requires signed-in user for creating, but restricts read/write access pending implementation of access logic.
+     */
+    match /shareLinks/{shareLinkId} {
+       function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get, list: if false; // TODO: Add link-based authentication or creator-based access.
+      allow create: if isSignedIn();
+      allow update, delete: if false; // TODO: Add creator-based access.
+    }
+
+    /**
+     * @description Restricts access to file fingerprints.
+     * @path /fileFingerprints/{fileFingerprintId}
+     * @allow (get, list) if false; // TODO: Determine access requirements and add appropriate rules.
+     * @allow (create, update, delete) if false; // TODO: Implement admin or service account access.
+     * @principle Restricts all access pending definition of clear access control requirements.
+     */
+    match /fileFingerprints/{fileFingerprintId} {
+      allow get, list, create, update, delete: if false; // TODO: Implement admin or service account access.
+    }
+
+    /**
+     * @description Restricts access to usage credit balances for each user. Only the owner can read or write.
+     * @path /users/{userId}/usageCredit
+     * @allow (get, create, update, delete, list) if request.auth.uid == userId
+     * @deny (get, create, update, delete, list) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/usageCredit {
+       function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId)/usageCredit);
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Restricts access to custom AI plugins.
+     * @path /plugins/{pluginId}
+     * @allow (get, list) if true;
+     * @allow (create) if isSignedIn();
+     * @allow (update, delete) if false; // TODO: Add developer role based access.
+     * @principle Restricts creation to signed-in users, but allows public reads (get, list).
+     */
+    match /plugins/{pluginId} {
+       function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false; // TODO: Add developer role based access.
+    }
+  }
+}

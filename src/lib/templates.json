@@ -1,0 +1,53 @@
+
+{
+  "templates": [
+    {
+      "id": "proj-proposal-01",
+      "title": "Project Proposal",
+      "description": "A comprehensive template for outlining a new project, including goals, scope, timeline, and budget.",
+      "category": "Project Management"
+    },
+    {
+      "id": "meeting-agenda-01",
+      "title": "Weekly Team Meeting Agenda",
+      "description": "A structured agenda for weekly team sync-ups, covering project updates, blockers, and action items.",
+      "category": "Project Management"
+    },
+    {
+      "id": "nda-01",
+      "title": "Non-Disclosure Agreement (NDA)",
+      "description": "A standard mutual non-disclosure agreement to protect confidential information shared between parties.",
+      "category": "Legal"
+    },
+    {
+      "id": "service-agreement-01",
+      "title": "Consulting Services Agreement",
+      "description": "A formal contract for engaging a consultant, outlining the scope of work, payment terms, and deliverables.",
+      "category": "Legal"
+    },
+    {
+      "id": "marketing-brief-01",
+      "title": "Campaign Marketing Brief",
+      "description": "A creative brief for a new marketing campaign, defining objectives, target audience, key messaging, and channels.",
+      "category": "Marketing"
+    },
+    {
+      "id": "social-media-plan-01",
+      "title": "Social Media Content Plan",
+      "description": "A monthly content calendar for planning and organizing social media posts across various platforms.",
+      "category": "Marketing"
+    },
+    {
+      "id": "job-offer-01",
+      "title": "Job Offer Letter",
+      "description": "A standard job offer letter template for extending an offer to a candidate, including salary, start date, and terms.",
+      "category": "Human Resources"
+    },
+    {
+        "id": "press-release-01",
+        "title": "Press Release",
+        "description": "A professional format for announcing company news, product launches, or events to the media.",
+        "category": "Marketing"
+    }
+  ]
+}
