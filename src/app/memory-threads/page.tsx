@@ -60,13 +60,14 @@ function ChatMessage({ sender, content }: { sender: 'user' | 'ai', content: stri
     );
 }
 
-function ThreadItem({ thread, onTogglePin, onUpdateBadge }: { thread: ThreadData, onTogglePin: () => void, onUpdateBadge: (badge: string) => void }) {
+function ThreadItem({ thread, onTogglePin, onUpdateBadge, onAccordionToggle }: { thread: ThreadData, onTogglePin: () => void, onUpdateBadge: (badge: string) => void, onAccordionToggle: (isOpen: boolean) => void }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
     const handleAccordionToggle = async (isOpen: boolean) => {
         setIsAccordionOpen(isOpen);
+        onAccordionToggle(isOpen);
         if (isOpen && messages.length === 0) {
             setIsLoadingMessages(true);
             const { data, error } = await supabase
@@ -89,10 +90,9 @@ function ThreadItem({ thread, onTogglePin, onUpdateBadge }: { thread: ThreadData
         <AccordionItem value={thread.id} className="border rounded-lg bg-card transition-all hover:shadow-md">
              <AccordionTrigger 
                 className="p-4 hover:no-underline w-full [&[data-state=open]>div>svg.chevron]:rotate-180" 
-                onValueChange={handleAccordionToggle}
                 asChild
             >
-                 <div className="flex items-center gap-4 cursor-pointer">
+                 <div className="flex items-center gap-4 cursor-pointer" onClick={() => handleAccordionToggle(!isAccordionOpen)}>
                     <Avatar className="h-10 w-10 bg-primary/10 text-primary hidden sm:flex">
                         <AvatarFallback><Bot className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
@@ -236,13 +236,14 @@ export default function MemoryThreadsPage() {
           )}
 
           {!isLoading && sortedThreads.length > 0 && (
-             <Accordion type="single" collapsible className="w-full space-y-4">
+             <Accordion type="single" collapsible className="w-full space-y-4" onValueChange={() => {}}>
                  {sortedThreads.map((thread, i) => (
                     <div key={thread.id} className="animate-fade-slide-up" style={{ animationDelay: `${i * 75}ms`}}>
                         <ThreadItem 
                             thread={thread} 
                             onTogglePin={() => togglePin(thread)}
                             onUpdateBadge={(badge) => updateBadge(thread, badge)}
+                            onAccordionToggle={() => {}}
                         />
                     </div>
                 ))}

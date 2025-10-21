@@ -41,7 +41,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { FileUpload, type FileUploadStatus } from '@/components/documents/file-upload';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -49,8 +49,17 @@ import { NewDocumentDialog } from '@/components/documents/new-document-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { SummaryDialog } from '@/components/documents/summary-dialog';
-import { useSupabaseCollection } from '@/lib/use-supabase-collection';
 import { supabase } from '@/lib/supabaseClient';
+
+type Document = {
+    id: string;
+    filename: string;
+    owner?: string;
+    created_at: string;
+    fileSize: number;
+    processingStatus?: string;
+    archiveSummary?: any;
+}
 
 const getAvatarImage = (owner?: string) => {
     if (!owner) return null;
@@ -80,8 +89,27 @@ export default function DocumentsPage() {
   const [isNewDocDialogOpen, setIsNewDocDialogOpen] = useState(false);
   const [summaryDoc, setSummaryDoc] = useState<any | null>(null);
   const { toast } = useToast();
+  const [documents, setDocuments] = useState<Document[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: documents, isLoading } = useSupabaseCollection('documents');
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      const { data, error } = await supabase.from('documents').select('*');
+      if (error) {
+        console.error('Error fetching documents:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error fetching documents',
+          description: error.message,
+        });
+      } else {
+        setDocuments(data);
+      }
+      setIsLoading(false);
+    };
+
+    fetchDocuments();
+  }, [toast]);
   
   const handleNewUploads = (newUploads: FileUploadStatus[]) => {
     setUploads(prev => [...newUploads, ...prev]);
@@ -97,6 +125,14 @@ export default function DocumentsPage() {
         if (!upload) return prev;
 
         if (status === 'completed') {
+            // Refetch documents to get the new upload
+            supabase.from('documents').select('*').then(({ data, error }) => {
+                if (error) {
+                    console.error('Error refetching documents:', error);
+                } else {
+                    setDocuments(data);
+                }
+            });
             return prev.filter(u => u.id !== id);
         } else {
             return prev.map(u => u.id === id ? { ...u, status, error } : u);
@@ -121,7 +157,7 @@ export default function DocumentsPage() {
 
     toast({
         title: "Summarization Queued",
-        description: `Request to summarize "${docData.filename}" has been added to the queue.`
+        description: `Request to summarize \"${docData.filename}\" has been added to the queue.`
     });
 
     try {
@@ -148,10 +184,7 @@ export default function DocumentsPage() {
     }
   }
 
-  const allDocs = (documents?.map(d => {
-      const uploadDate = new Date(d.uploadDate);
-      return {...d, uploadDate };
-  }) || []);
+  const allDocs = (documents?.map(d => ({...d, created_at: new Date(d.created_at)})) || []);
   
   const currentUploads = uploads.filter(u => u.status !== 'completed').sort((a, b) => a.file.lastModified - b.file.lastModified);
 
@@ -297,7 +330,7 @@ export default function DocumentsPage() {
                       </div>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
-                    {format(doc.uploadDate, 'MMM d, yyyy')}
+                    {format(doc.created_at, 'MMM d, yyyy')}
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">
                     {formatFileSize(doc.fileSize)}

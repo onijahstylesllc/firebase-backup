@@ -212,11 +212,11 @@ function AccountSettings() {
                 </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className=\'max-w-sm\'/>
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className='max-w-sm'/>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={email} disabled className=\'max-w-sm\'/>
+                <Input id="email" type="email" value={email} disabled className='max-w-sm'/>
               </div>
             </CardContent>
             <CardFooter className="gap-2">
@@ -241,7 +241,7 @@ function SecuritySettings() {
             <CardHeader>
                 <CardTitle>Security</CardTitle>
                 <CardDescription>
-                    Manage your account\'s security settings.
+                    Manage your account's security settings.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -258,7 +258,7 @@ function AiSettings() {
             <CardHeader>
                 <CardTitle>AI Preferences</CardTitle>
                 <CardDescription>
-                    Customize your AI assistant\'s behavior.
+                    Customize your AI assistant's behavior.
                 </CardDescription>
             </CardHeader>
             <CardContent>

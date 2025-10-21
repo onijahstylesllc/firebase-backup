@@ -151,7 +151,7 @@ function AiChatAssistant({ documentId, documentData }: { documentId: string, doc
         const editorImage = placeholderImages.placeholderImages.find(p => p.id === "editor-page");
 
         const chatHistory = messages.map(msg => ({
-            role: msg.sender === 'user' ? 'user' : 'model',
+            role: (msg.sender === 'user' ? 'user' : 'model') as 'user' | 'model',
             content: [{ text: msg.content }],
         }));
 
@@ -248,9 +248,7 @@ function AiChatAssistant({ documentId, documentData }: { documentId: string, doc
   );
 }
 
-// ... (rest of the file remains the same, with necessary adjustments for Supabase data structures)
-
-export default function DocumentEditorPage({ params }: { id: string }) {
+export default function DocumentEditorPage({ params }: any) {
   const [user, setUser] = useState<User | null>(null);
   const [docData, setDocData] = useState<any>(null);
   const [isDocLoading, setIsDocLoading] = useState(true);

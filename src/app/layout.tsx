@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarNav } from '@/components/layout/sidebar-nav';
-import type { User } from '@/lib/types';
 import { Header } from '@/components/layout/header';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -30,6 +29,12 @@ const fontHeadline = Space_Grotesk({
 });
 
 const unprotectedRoutes = ['/', '/login'];
+
+type User = {
+    name: string;
+    email: string;
+    avatar: string;
+}
 
 function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);

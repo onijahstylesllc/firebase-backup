@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { AiUsage } from '@/components/dashboard/ai-usage';
+import { type Profile } from '@/lib/types';
 
 const recentActivity = [
   {
@@ -65,7 +66,7 @@ const quickAccessTools = [
 ];
 
 export default function DashboardPage() {
-  const { data: userProfile, isLoading: isProfileLoading } = useSupabaseCollection('profiles', { limit: 1 });
+  const { data: userProfile, isLoading: isProfileLoading } = useSupabaseCollection<Profile>('profiles');
   const usage = userProfile?.[0]?.usage || 0;
   const plan = userProfile?.[0]?.plan || 'Free';
   const usagePercentage = (usage / (plan === 'Pro' ? 200 : 20)) * 100;
