@@ -1,8 +1,7 @@
 
 'use client';
 
-import { useUser, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { supabase } from '@/lib/supabaseClient';
 import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -26,15 +25,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from '@/lib/utils';
-import { useCollection } from '@/firebase/firestore/use-collection';
+import { User } from '@supabase/supabase-js';
 
 interface ThreadData {
   id: string;
-  userId: string;
-  documentId: string;
-  documentFilename?: string;
-  lastActivityTime?: any; // Firestore Timestamp
-  isPinned?: boolean;
+  user_id: string;
+  document_id: string;
+  document_filename?: string;
+  last_activity_time?: string;
+  is_pinned?: boolean;
   badge?: string;
 }
 
@@ -42,7 +41,7 @@ interface Message {
     id: string;
     sender: 'user' | 'ai';
     content: string;
-    timestamp: Date;
+    created_at: string;
 }
 
 function ChatMessage({ sender, content }: { sender: 'user' | 'ai', content: string }) {
@@ -62,27 +61,26 @@ function ChatMessage({ sender, content }: { sender: 'user' | 'ai', content: stri
 }
 
 function ThreadItem({ thread, onTogglePin, onUpdateBadge }: { thread: ThreadData, onTogglePin: () => void, onUpdateBadge: (badge: string) => void }) {
-    const { firestore } = useUser();
     const [messages, setMessages] = useState<Message[]>([]);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
     const handleAccordionToggle = async (isOpen: boolean) => {
         setIsAccordionOpen(isOpen);
-        if (isOpen && messages.length === 0 && firestore) {
+        if (isOpen && messages.length === 0) {
             setIsLoadingMessages(true);
-            const messagesQuery = query(collection(firestore, `users/${thread.userId}/aiMemoryThreads/${thread.id}/aiMessages`), orderBy('timestamp', 'asc'));
-            const messagesSnapshot = await getDocs(messagesQuery);
-            const fetchedMessages: Message[] = messagesSnapshot.docs.map(msgDoc => {
-                const msgData = msgDoc.data();
-                return {
-                    id: msgDoc.id,
-                    sender: msgData.sender,
-                    content: msgData.content,
-                    timestamp: msgData.timestamp?.toDate() || new Date(),
-                }
-            });
-            setMessages(fetchedMessages);
+            const { data, error } = await supabase
+                .from('ai_messages')
+                .select('*')
+                .eq('thread_id', thread.id)
+                .order('created_at', { ascending: true });
+
+            if (data) {
+                setMessages(data);
+            }
+            if (error) {
+                console.error('Error fetching messages:', error);
+            }
             setIsLoadingMessages(false);
         }
     }
@@ -99,18 +97,18 @@ function ThreadItem({ thread, onTogglePin, onUpdateBadge }: { thread: ThreadData
                         <AvatarFallback><Bot className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
                     <div className="flex-1 text-left">
-                        <Link href={`/documents/${thread.documentId}`} className="font-semibold hover:underline" onClick={(e) => e.stopPropagation()}>{thread.documentFilename || 'Untitled Document'}</Link>
-                        <p className="text-sm text-muted-foreground">Last activity {thread.lastActivityTime ? formatDistanceToNow(thread.lastActivityTime.toDate(), { addSuffix: true }) : 'recently'}</p>
+                        <Link href={`/documents/${thread.document_id}`} className="font-semibold hover:underline" onClick={(e) => e.stopPropagation()}>{thread.document_filename || 'Untitled Document'}</Link>
+                        <p className="text-sm text-muted-foreground">Last activity {thread.last_activity_time ? formatDistanceToNow(new Date(thread.last_activity_time), { addSuffix: true }) : 'recently'}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         {thread.badge && <Badge variant="secondary">{thread.badge}</Badge>}
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onTogglePin(); }}>
-                                    <Pin className={cn("h-4 w-4 transition-colors", thread.isPinned ? 'text-primary fill-primary' : 'text-muted-foreground hover:text-primary')} />
+                                    <Pin className={cn("h-4 w-4 transition-colors", thread.is_pinned ? 'text-primary fill-primary' : 'text-muted-foreground hover:text-primary')} />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent><p>{thread.isPinned ? 'Unpin' : 'Pin'} conversation</p></TooltipContent>
+                            <TooltipContent><p>{thread.is_pinned ? 'Unpin' : 'Pin'} conversation</p></TooltipContent>
                         </Tooltip>
                          <div className="p-2 hover:bg-muted rounded-md">
                             <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 chevron" />
@@ -136,7 +134,7 @@ function ThreadItem({ thread, onTogglePin, onUpdateBadge }: { thread: ThreadData
                         className="h-9"
                     />
                     <Button asChild variant="outline" size="sm">
-                        <Link href={`/documents/${thread.documentId}`}>Resume <ChevronRight className="h-4 w-4 ml-2" /></Link>
+                        <Link href={`/documents/${thread.document_id}`}>Resume <ChevronRight className="h-4 w-4 ml-2" /></Link>
                     </Button>
                 </div>
             </AccordionContent>
@@ -145,37 +143,60 @@ function ThreadItem({ thread, onTogglePin, onUpdateBadge }: { thread: ThreadData
 }
 
 export default function MemoryThreadsPage() {
-  const { firestore, user } = useUser();
+  const [user, setUser] = useState<User | null>(null);
+  const [threadsData, setThreadsData] = useState<ThreadData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const threadsQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return query(
-      collection(firestore, `users/${user.uid}/aiMemoryThreads`)
-    );
-  }, [firestore, user]);
+  useEffect(() => {
+    const fetchUserAndThreads = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
 
-  const { data: threadsData, isLoading } = useCollection<ThreadData>(threadsQuery);
+        if (user) {
+            const { data, error } = await supabase
+                .from('ai_memory_threads')
+                .select('*')
+                .eq('user_id', user.id);
+            
+            if (data) {
+                setThreadsData(data);
+            }
+            if (error) {
+                console.error("Error fetching threads:", error);
+            }
+        }
+        setIsLoading(false);
+    };
+    fetchUserAndThreads();
+  }, []);
 
   const togglePin = async (thread: ThreadData) => {
-    if (!firestore || !user) return;
-    const threadRef = doc(firestore, `users/${user.uid}/aiMemoryThreads`, thread.id);
-    const newPinnedState = !thread.isPinned;
-    await updateDoc(threadRef, { isPinned: newPinnedState });
+    if (!user) return;
+    const newPinnedState = !thread.is_pinned;
+    await supabase
+        .from('ai_memory_threads')
+        .update({ is_pinned: newPinnedState })
+        .eq('id', thread.id);
+    // Refresh data
+    setThreadsData(threadsData.map(t => t.id === thread.id ? { ...t, is_pinned: newPinnedState } : t));
   };
   
   const updateBadge = async (thread: ThreadData, newBadge: string) => {
-    if (!firestore || !user) return;
-    const threadRef = doc(firestore, `users/${user.uid}/aiMemoryThreads`, thread.id);
-    await updateDoc(threadRef, { badge: newBadge });
+    if (!user) return;
+    await supabase
+        .from('ai_memory_threads')
+        .update({ badge: newBadge })
+        .eq('id', thread.id);
+    // Refresh data
+    setThreadsData(threadsData.map(t => t.id === thread.id ? { ...t, badge: newBadge } : t));
   };
 
   const sortedThreads = useMemo(() => {
-      if (!threadsData) return [];
       return [...threadsData].sort((a, b) => {
-        if (a.isPinned && !b.isPinned) return -1;
-        if (!a.isPinned && b.isPinned) return 1;
-        const timeA = a.lastActivityTime?.toDate()?.getTime() || 0;
-        const timeB = b.lastActivityTime?.toDate()?.getTime() || 0;
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
+        const timeA = a.last_activity_time ? new Date(a.last_activity_time).getTime() : 0;
+        const timeB = b.last_activity_time ? new Date(b.last_activity_time).getTime() : 0;
         return timeB - timeA;
     });
   }, [threadsData]);

@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "supabase": { "url": "https://pszmwgpjwuprytrahkro.supabase.co",
+     "apiKey": "${eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBzem13Z3Bqd3Vwcnl0cmFoa3JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4OTM2MDYsImV4cCI6MjA3NjQ2OTYwNn0.56OQIcwoz7UwQMpaEuRfP4k7qEE1ZobPmn-aTbONLwI}",
+      "description": "Supabase backend for user data, documents, and storage"
+  }
+}

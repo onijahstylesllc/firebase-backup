@@ -13,8 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useFirebase } from '@/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Download } from 'lucide-react';
 
@@ -26,7 +25,6 @@ interface SummaryDialogProps {
 export function SummaryDialog({ doc, onOpenChange }: SummaryDialogProps) {
   const [summary, setSummary] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const { firestore, user } = useFirebase();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -36,22 +34,37 @@ export function SummaryDialog({ doc, onOpenChange }: SummaryDialogProps) {
   }, [doc]);
 
   const handleSaveChanges = async () => {
-    if (!doc || !user || !firestore) return;
+    if (!doc) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        toast({
+            variant: 'destructive',
+            title: 'Authentication Error',
+            description: 'You must be logged in to save changes.',
+        });
+        return;
+    }
+
     setIsSaving(true);
-    const docRef = doc(firestore, 'users', user.uid, 'documents', doc.id);
     try {
-      await updateDoc(docRef, { archiveSummary: summary });
+      const { error } = await supabase
+        .from('documents')
+        .update({ archiveSummary: summary })
+        .match({ id: doc.id, user_id: user.id });
+
+      if (error) throw error;
+
       toast({
         title: 'Summary Updated',
         description: 'Your changes to the summary have been saved.',
       });
       onOpenChange(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update summary:', error);
       toast({
         variant: 'destructive',
         title: 'Save Failed',
-        description: 'Could not save the summary. Please try again.',
+        description: error.message || 'Could not save the summary. Please try again.',
       });
     } finally {
       setIsSaving(false);
@@ -59,6 +72,7 @@ export function SummaryDialog({ doc, onOpenChange }: SummaryDialogProps) {
   };
 
   const handleDownload = () => {
+    if (!doc) return;
     const blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

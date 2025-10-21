@@ -27,7 +27,7 @@ import {
   PanelLeft,
   Search,
   Settings,
-  User,
+  User as UserIcon,
   LogOut
 } from 'lucide-react';
 import Link from 'next/link';
@@ -36,17 +36,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import React from 'react';
 import { SidebarNav } from './sidebar-nav';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
-import { useFirebase } from '@/firebase';
 import { ThemeToggle } from './theme-toggle';
-
-type User = {
-  name: string;
-  email: string;
-  avatar: string;
-};
+import { supabase } from '@/lib/supabaseClient';
+import { User } from '@/lib/types';
 
 export function Header({ user }: { user: User }) {
-  const { auth } = useFirebase();
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
        <Sheet>
@@ -92,7 +86,7 @@ export function Header({ user }: { user: User }) {
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/settings">
-              <User className="mr-2 h-4 w-4" />
+              <UserIcon className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </Link>
           </DropdownMenuItem>
@@ -103,7 +97,7 @@ export function Header({ user }: { user: User }) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => auth.signOut()}>
+          <DropdownMenuItem onClick={() => supabase.auth.signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>

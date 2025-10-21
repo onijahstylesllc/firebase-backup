@@ -1,18 +1,6 @@
 
 'use client';
-import Link from 'next/link';
-import Image from 'next/image';
-import {
-  ArrowRight,
-  FilePlus2,
-  FileUp,
-  Globe,
-  MoreVertical,
-  Loader2,
-  Bot,
-  MessageSquare,
-  Users,
-} from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -22,242 +10,166 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import placeholderImages from '@/lib/placeholder-images.json';
-import { AiUsageChart } from '@/components/dashboard/ai-usage-chart';
-import { useUser, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
-import { useCollection } from '@/firebase/firestore/use-collection';
+import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSupabaseCollection } from '@/lib/use-supabase-collection';
 import { formatDistanceToNow } from 'date-fns';
-import { useState } from 'react';
-import { NewDocumentDialog } from '@/components/documents/new-document-dialog';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import {
+  FileUp,
+  Clock,
+  BarChartBig,
+  MessageSquare,
+  Repeat,
+  Languages,
+  Gavel,
+  ShieldCheck,
+  Calculator,
+} from 'lucide-react';
+import Link from 'next/link';
+import { AiUsage } from '@/components/dashboard/ai-usage';
 
-
-const quickActions = [
+const recentActivity = [
   {
-    id: 'upload',
-    label: 'Upload & Analyze',
-    description: 'Let AI extract key insights and data points from your existing documents.',
-    icon: FileUp,
-    href: '/analyze',
+    id: 'doc-1',
+    fileName: 'Project Proposal Q3.pdf',
+    action: 'edited',
+    timestamp: new Date(Date.now() - 1000 * 60 * 5),
   },
   {
-    id: 'create',
-    label: 'Create with AI',
-    description: 'Start from a blank page with an AI partner to help you draft and create.',
-    icon: FilePlus2,
-    href: '#',
+    id: 'doc-2',
+    fileName: 'Marketing Campaign Brief.docx',
+    action: 'commented on',
+    timestamp: new Date(Date.now() - 1000 * 60 * 22),
   },
   {
-    id: 'summarize',
-    label: 'Summarize a Meeting',
-    description: 'Turn lengthy transcripts into concise summaries and actionable insights.',
-    icon: Users,
-    href: '/summarize-meeting',
+    id: 'doc-3',
+    fileName: 'Financial-Report-2024.xlsx',
+    action: 'shared',
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+  },
+  {
+    id: 'user-1',
+    userName: 'Alice Johnson',
+    action: 'joined your team',
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8),
   },
 ];
 
+const quickAccessTools = [
+  { icon: MessageSquare, label: 'Ask-the-PDF', href: '/documents' },
+  { icon: Repeat, label: 'Rewrite', href: '/rewrite' },
+  { icon: Languages, label: 'Translate', href: '/translate' },
+  { icon: Gavel, label: 'Legal Checker', href: '/legal' },
+  { icon: ShieldCheck, label: 'Policy Compliance', href: '/policy' },
+  { icon: Calculator, label: 'Math Solver', href: '/math-solver' },
+];
+
 export default function DashboardPage() {
-  const { firestore, user } = useUser();
-  const [isNewDocDialogOpen, setIsNewDocDialogOpen] = useState(false);
-
-  const documentsQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return query(
-        collection(firestore, `users/${user.uid}/documents`), 
-        orderBy('uploadDate', 'desc'), 
-        limit(3)
-    );
-  }, [firestore, user]);
-
-  const { data: recentDocuments, isLoading: isLoadingDocs } = useCollection(documentsQuery);
-  
-  const threadsQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return query(
-      collection(firestore, `users/${user.uid}/aiMemoryThreads`),
-      orderBy('lastActivityTime', 'desc'),
-      limit(4)
-    );
-  }, [firestore, user]);
-
-  const { data: recentThreads, isLoading: isLoadingThreads } = useCollection(threadsQuery);
-
-
-  const handleQuickAction = (id: string) => {
-    if (id === 'create') {
-      setIsNewDocDialogOpen(true);
-    }
-    // Add handlers for other actions later
-  }
+  const { data: userProfile, isLoading: isProfileLoading } = useSupabaseCollection('profiles', { limit: 1 });
+  const usage = userProfile?.[0]?.usage || 0;
+  const plan = userProfile?.[0]?.plan || 'Free';
+  const usagePercentage = (usage / (plan === 'Pro' ? 200 : 20)) * 100;
 
   return (
-    <>
-    <NewDocumentDialog open={isNewDocDialogOpen} onOpenChange={setIsNewDocDialogOpen} />
-    <div className="grid gap-8 animate-fade-in">
-      
-       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-2 animate-fade-slide-up" style={{ animationDelay: '100ms'}}>
-          <CardHeader>
-            <CardTitle>Recent Documents</CardTitle>
-            <CardDescription>
-              Quickly jump back into your work.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            {isLoadingDocs && Array.from({length: 3}).map((_, i) => (
-                <div key={i} className="flex items-center gap-4">
-                    <Skeleton className="h-[75px] w-[53px] rounded-md shrink-0" />
-                    <div className="flex-1 space-y-2">
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                    </div>
+    <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="xl:col-span-2">
+        <div className="grid gap-4 md:grid-cols-2 lg:gap-8">
+          <Card className="animate-fade-in">
+            <CardHeader>
+              <CardTitle className="font-headline">Quick Access</CardTitle>
+              <CardDescription>
+                Your most-used AI tools, just a click away.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {quickAccessTools.map((tool) => (
+                <Button
+                  key={tool.label}
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center gap-1 text-center"
+                  asChild
+                >
+                  <Link href={tool.href}>
+                    <tool.icon className="h-6 w-6 text-primary" />
+                    <span className="text-xs text-muted-foreground">
+                      {tool.label}
+                    </span>
+                  </Link>
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+          <Card className="animate-fade-in-delay-1">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium font-headline">
+                My Plan
+              </CardTitle>
+              <BarChartBig className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              {isProfileLoading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-1/2" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
                 </div>
-            ))}
-            {!isLoadingDocs && recentDocuments?.length === 0 && (
-                <p className='text-sm text-muted-foreground text-center py-8'>No documents found. Upload one to get started!</p>
-            )}
-            {recentDocuments?.map((doc) => {
-              const docImage = placeholderImages.placeholderImages.find(p => p.id === 'doc-thumb-1');
-              return (
-                <div key={doc.id} className="flex items-center gap-4">
-                  {docImage && (
-                    <Image
-                      src={docImage.imageUrl}
-                      alt={doc.filename}
-                      data-ai-hint={docImage.imageHint}
-                      width={53}
-                      height={75}
-                      className="rounded-md object-cover shrink-0"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <Link href={`/documents/${doc.id}`} className="font-semibold hover:underline">
-                      {doc.filename}
-                    </Link>
-                    <p className="text-sm text-muted-foreground">
-                      {doc.uploadDate ? `Modified ${formatDistanceToNow(doc.uploadDate.toDate(), { addSuffix: true })}` : 'Modified recently'}
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href={`/documents/${doc.id}`}>Open</Link>
-                  </Button>
-                </div>
-              );
-            })}
-          </CardContent>
-           <CardFooter>
-             <Button variant="outline" className="w-full" asChild>
-                <Link href="/documents">View all documents</Link>
-             </Button>
-           </CardFooter>
-        </Card>
-        
-        <Card className="animate-fade-slide-up" style={{ animationDelay: '200ms'}}>
-          <CardHeader>
-            <CardTitle>Recent Conversations</CardTitle>
-            <CardDescription>
-                Pick up where your AI assistant left off.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-             {isLoadingThreads && Array.from({length: 4}).map((_, i) => (
-                <div key={i} className="flex items-start gap-3">
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-2/3" />
-                    </div>
-                </div>
-             ))}
-             {!isLoadingThreads && recentThreads?.length === 0 && (
-                <div className='text-sm text-muted-foreground text-center py-8 flex flex-col items-center'>
-                    <MessageSquare className="h-8 w-8 mb-2"/>
-                    <p>No AI chats yet.</p>
-                </div>
-             )}
-             {recentThreads?.map((thread) => (
-                <div key={thread.id} className="flex items-start gap-3">
-                    <Avatar className="h-8 w-8 bg-primary/10 text-primary">
-                        <AvatarFallback><Bot className="h-4 w-4"/></AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                        <Link href={`/documents/${thread.documentId}`} className="font-semibold hover:underline text-sm leading-tight">
-                            {thread.documentFilename || 'Untitled Document'}
-                        </Link>
-                        <p className="text-xs text-muted-foreground truncate">
-                            {thread.lastActivityTime ? `${formatDistanceToNow(thread.lastActivityTime.toDate(), { addSuffix: true })}` : 'Recently'}
-                        </p>
-                    </div>
-                </div>
-             ))}
-          </CardContent>
-           <CardFooter>
-             <Button variant="outline" className="w-full" asChild>
-                <Link href="/memory-threads">View all conversations</Link>
-             </Button>
-           </CardFooter>
-        </Card>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{plan} Plan</div>
+                  <p className="text-xs text-muted-foreground">
+                    You've used {usage} of your 20 document analyses this
+                    month.
+                  </p>
+                  <Progress value={usagePercentage} className="mt-2" />
+                </>
+              )}
+            </CardContent>
+            <CardFooter>
+              <Button size="sm" className="w-full">
+                Upgrade Plan
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
 
+        <div className="mt-4 lg:mt-8 animate-fade-in-delay-2">
+          <AiUsage />
+        </div>
       </div>
 
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 animate-fade-slide-up" style={{ animationDelay: '300ms'}}>
-           <CardHeader>
-            <CardTitle>AI-Powered Actions</CardTitle>
-            <CardDescription>
-              Supercharge your workflow with a single click.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {quickActions.map((action, i) => (
-              <Card key={action.label} className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 flex flex-col">
-                <CardHeader className="pb-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-2">
-                        <action.icon className="h-5 w-5 text-primary" />
-                    </div>
-                  <h3 className="font-semibold">
-                    {action.label}
-                  </h3>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <p className="text-sm text-muted-foreground">{action.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild={action.id !== 'create'} size="sm" variant="ghost" className="-ml-4" onClick={() => handleQuickAction(action.id)}>
-                    <Link href={action.href}>
-                      Start Now <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="animate-fade-slide-up" style={{ animationDelay: '400ms'}}>
-          <CardHeader>
-            <CardTitle>AI Usage</CardTitle>
-            <CardDescription>
-              Your AI credit usage over the last 6 months.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <AiUsageChart />
-          </CardContent>
-        </Card>
-      </div>
-
+      <Card className="animate-fade-in-delay-3 xl:col-span-1">
+        <CardHeader>
+          <CardTitle className="font-headline">Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          {recentActivity.map((activity, i) => (
+            <div
+              key={activity.id}
+              className="flex items-center gap-3"
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                {activity.fileName ? (
+                  <FileUp className="h-4 w-4" />
+                ) : (
+                  <Clock className="h-4 w-4" />
+                )}
+              </div>
+              <div className="text-sm">
+                <p>
+                  <span className="font-medium">
+                    {activity.fileName || activity.userName}
+                  </span>{' '}
+                  {activity.action}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(activity.timestamp, { addSuffix: true })}
+                </p>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     </div>
-    </>
   );
 }

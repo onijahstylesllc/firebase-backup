@@ -6,7 +6,6 @@ import { Logo } from '@/components/logo'
 import {
   ArrowRight,
   Check,
-  Menu,
   Zap,
   LineChart,
   BrainCircuit,
@@ -35,15 +34,21 @@ import {
   Building,
   FileCheck,
   Users,
+  ShieldCheck,
+  Lock,
+  FileLock,
+  Server,
+  UploadCloud,
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TestimonialCarouselSkeleton } from '@/components/landing/testimonial-carousel-skeleton'
+import { useParallax } from 'react-scroll-parallax'
+import { useTypingAnimation } from '@/hooks/use-typing-animation'
 
 const TestimonialCarousel = dynamic(
   () => import('@/components/landing/testimonial-carousel').then(mod => mod.TestimonialCarousel),
@@ -51,6 +56,11 @@ const TestimonialCarousel = dynamic(
     ssr: false,
     loading: () => <TestimonialCarouselSkeleton />,
   }
+)
+
+const MobileNav = dynamic(
+    () => import('@/components/layout/mobile-nav').then(mod => mod.MobileNav),
+    { ssr: false }
 )
 
 const mainTools = [
@@ -75,6 +85,13 @@ const features = [
   { icon: BrainCircuit, title: 'Automated Compliance', description: 'Check documents against policies automatically.' },
   { icon: BookCopy, title: 'Custom Templates', description: 'Create and save reusable templates.' },
   { icon: Zap, title: 'Advanced Security', description: 'Enterprise-grade security and encryption.' },
+]
+
+const trustBadges = [
+  { icon: ShieldCheck, title: 'SOC 2 Type II', description: 'Enterprise-grade security and compliance.' },
+  { icon: Lock, title: 'GDPR Compliant', description: 'Your data privacy is our priority.' },
+  { icon: FileLock, title: 'End-to-End Encryption', description: 'All your documents are encrypted at rest and in transit.' },
+  { icon: Server, title: '99.9% Uptime', description: 'Reliable access to your documents when you need them.' },
 ]
 
 const teamFeatures = [
@@ -127,41 +144,18 @@ const aiToolkit = [
 ]
 
 const companyLogos = ['QuantumLeap', 'ApexSphere', 'NexusCore', 'StellarForge', 'Vertex Inc.', 'NovaGen', 'BlueHorizon', 'Zenith Corp', 'Momentum AI', 'Innovate IO', 'Synergy Labs', 'TerraFirm']
+const typingWords = [' Intelligently', ' Instantly', ' Effortlessly', ' Powerfully'];
 
-// Typing animation hook
-const useTypingAnimation = () => {
-  const words = ['intelligently', 'instantly', 'effortlessly', 'powerfully']
-  const [currentWord, setCurrentWord] = useState('')
-  const [wordIndex, setWordIndex] = useState(0)
-  const [isDeleting, setIsDeleting] = useState(false)
 
-  useEffect(() => {
-    const word = words[wordIndex]
-    const timeout = setTimeout(
-      () => {
-        if (!isDeleting) {
-          setCurrentWord(word.substring(0, currentWord.length + 1))
-          if (currentWord === word) {
-            setTimeout(() => setIsDeleting(true), 2000)
-          }
-        } else {
-          setCurrentWord(word.substring(0, currentWord.length - 1))
-          if (currentWord === '') {
-            setIsDeleting(false)
-            setWordIndex((wordIndex + 1) % words.length)
-          }
-        }
-      },
-      isDeleting ? 50 : 100
-    )
-    return () => clearTimeout(timeout)
-  }, [currentWord, isDeleting, wordIndex, words])
-
-  return currentWord
-}
 
 export default function Home() {
-  const typedWord = useTypingAnimation()
+  const typedWord = useTypingAnimation(typingWords)
+  const featuresRef = useRef(null)
+  const featuresParallax = useParallax<HTMLDivElement>({
+    speed: 10,
+    rootMargin: { top: 0, right: 0, bottom: -500, left: 0 },
+  })
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -183,34 +177,13 @@ export default function Home() {
             <Button variant="ghost" asChild><Link href="/login">Sign In</Link></Button>
             <Button asChild><Link href="/dashboard">Get Started Free <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
           </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden ml-auto">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <nav className="grid gap-6 text-lg font-medium mt-8">
-                <Link href="/" className="flex items-center gap-2"><Logo className="h-6 w-6 text-primary" /><span className="font-bold">DocuMind AI</span></Link>
-                <Link href="#features" className="text-muted-foreground hover:text-foreground">Features</Link>
-                <Link href="#solutions" className="text-muted-foreground hover:text-foreground">Solutions</Link>
-                <Link href="#testimonials" className="text-muted-foreground hover:text-foreground">Testimonials</Link>
-                <Link href="#pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link>
-                <div className="border-t pt-6 flex flex-col gap-4">
-                  <ThemeToggle />
-                  <Button variant="ghost" asChild><Link href="/login">Sign In</Link></Button>
-                  <Button asChild><Link href="/dashboard">Get Started</Link></Button>
-                </div>
-              </nav>
-            </SheetContent>
-          </Sheet>
+          <MobileNav />
         </div>
       </header>
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-20 md:py-32 lg:py-40">
+        <section className="py-20 md:py-32 lg:py-40 relative">
           <div className="container px-4 md:px-6">
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
               <div className="flex flex-col justify-center space-y-6 text-center lg:text-left">
@@ -222,17 +195,21 @@ export default function Home() {
                   DocuMind AI is the world's first intelligent document workspace. Go beyond editing and leverage AI to analyze, create, and collaborate.
                 </p>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center lg:justify-start">
-                  <Button size="lg" asChild><Link href="/dashboard">Start for Free <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
-                  <Button size="lg" variant="outline" asChild><Link href="#features">See The Magic</Link></Button>
+                  <Button size="lg" asChild><Link href="/dashboard">Get Started Free <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
                 </div>
               </div>
               <div className="flex items-center justify-center">
-                <div className="relative w-full max-w-xl aspect-[4/3] rounded-xl overflow-hidden shadow-2xl ring-1 ring-border/50">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 animate-pulse" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Sparkles className="h-24 w-24 text-primary animate-spin-slow" />
+                <Link href="/dashboard" className="w-full max-w-xl">
+                  <div className="relative w-full aspect-[4/3] rounded-xl border-2 border-dashed border-muted-foreground/40 hover:border-primary/80 transition-all duration-300 flex flex-col items-center justify-center text-center p-8 group">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20 mb-4">
+                      <UploadCloud className="h-10 w-10 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-xl text-foreground">Upload Document</h3>
+                    <p className="text-muted-foreground mt-2">
+                      Drag & drop or click to upload your PDF, DOCX, or image file.
+                    </p>
                   </div>
-                </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -243,8 +220,8 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6">
               {mainTools.map((tool, index) => (
-                <Link key={tool.title} href={tool.href} className="group" style={{ animationDelay: `${index * 50}ms` }}>
-                  <div className="text-center p-4 md:p-6 rounded-xl border bg-card shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary/50">
+                <Link key={tool.title} href={tool.href} className="group">
+                  <div className="text-center p-4 md:p-6 rounded-xl border bg-card shadow-sm card-hover-effect">
                     <div className="flex items-center justify-center mb-4">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20">
                         <tool.icon className="h-6 w-6 text-primary" />
@@ -273,8 +250,30 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Trust Badges & Compliance */}
+        <section className="py-12 md:py-20 bg-muted/40">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center text-center space-y-4 mb-12">
+              <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary font-semibold">Security</div>
+              <h2 className="text-3xl font-bold font-headline sm:text-5xl">Trust & Compliance</h2>
+              <p className="max-w-[900px] text-muted-foreground md:text-xl">Your data is safe with us. We are compliant with the latest security standards.</p>
+            </div>
+            <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {trustBadges.map((badge, i) => (
+                <div key={badge.title} className="text-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
+                    <badge.icon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-bold font-headline">{badge.title}</h3>
+                  <p className="text-sm text-muted-foreground">{badge.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Features */}
-        <section id="features" className="w-full py-20 md:py-32">
+        <section id="features" ref={featuresParallax.ref} className="w-full py-20 md:py-32">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center text-center space-y-4 mb-12">
               <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary font-semibold">Features</div>
@@ -283,7 +282,7 @@ export default function Home() {
             </div>
             <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, i) => (
-                <Card key={feature.title} className="text-center group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <Card key={feature.title} className="text-center group card-hover-effect">
                   <CardHeader className="items-center">
                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 group-hover:scale-110 transition-transform">
                       <feature.icon className="h-6 w-6 text-primary" />
@@ -309,7 +308,7 @@ export default function Home() {
             </div>
             <div className="mx-auto grid max-w-md gap-8 sm:max-w-lg lg:max-w-none lg:grid-cols-3">
               {pricingTiers.map((tier) => (
-                <Card key={tier.name} className={`flex flex-col ${tier.isFeatured ? 'border-primary ring-2 ring-primary shadow-2xl scale-105' : ''}`}>
+                <Card key={tier.name} className={`flex flex-col card-hover-effect ${tier.isFeatured ? 'border-primary ring-2 ring-primary shadow-2xl scale-105' : ''}`}>
                   <CardHeader className="pb-4">
                     <CardTitle className="text-xl font-headline">{tier.name}</CardTitle>
                     <CardDescription>{tier.description}</CardDescription>

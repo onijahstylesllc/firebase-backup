@@ -13,9 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useFirebase } from '@/firebase';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
 
 interface NewDocumentDialogProps {
@@ -27,13 +25,9 @@ interface NewDocumentDialogProps {
 
 export function NewDocumentDialog({ open, onOpenChange, initialName, initialContent }: NewDocumentDialogProps) {
   const [docName, setDocName] = useState('');
-  const { firestore, user } = useFirebase();
   const { toast } = useToast();
 
   useEffect(() => {
-    // When the dialog opens, set the document name.
-    // If an initialName is provided (from a template), use it.
-    // Otherwise, reset it to an empty string for a new blank document.
     if (open) {
       setDocName(initialName || '');
     }
@@ -48,29 +42,40 @@ export function NewDocumentDialog({ open, onOpenChange, initialName, initialCont
       return;
     }
 
-    if (!firestore || !user) {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
         toast({
             variant: 'destructive',
             title: 'Error',
-            description: 'Could not connect to the database. Please try again.',
+            description: 'You must be logged in to create a document.',
         });
         return;
     }
 
     const newDoc = {
         filename: docName.endsWith('.pdf') ? docName : `${docName}.pdf`,
-        owner: user.displayName || user.email,
-        uploadDate: serverTimestamp(),
+        user_id: user.id,
+        uploadDate: new Date().toISOString(),
         fileSize: 0,
         contentType: 'application/pdf',
         storageLocation: '',
         downloadURL: '',
         isBlank: !initialContent,
-        content: initialContent || '', // Save template content
+        content: initialContent || '',
     };
     
-    const collectionRef = collection(firestore, 'users', user.uid, 'documents');
-    addDocumentNonBlocking(collectionRef, newDoc);
+    const { error } = await supabase.from('documents').insert([newDoc]);
+
+    if (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Error creating document',
+            description: error.message,
+        });
+        console.error('Error inserting document:', error);
+        return;
+    }
 
     toast({
         title: 'Document created',

@@ -42,17 +42,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { FileUpload, type FileUploadStatus } from '@/components/documents/file-upload';
 import { useState } from 'react';
-import { useUser, useMemoFirebase } from '@/firebase';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, orderBy, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { NewDocumentDialog } from '@/components/documents/new-document-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { summarizeDocument } from '@/ai/flows/ai-archive-old-docs';
 import { SummaryDialog } from '@/components/documents/summary-dialog';
+import { useSupabaseCollection } from '@/lib/use-supabase-collection';
+import { supabase } from '@/lib/supabaseClient';
 
 const getAvatarImage = (owner?: string) => {
     if (!owner) return null;
@@ -79,20 +77,11 @@ const getStatusBadge = (status?: string) => {
 
 export default function DocumentsPage() {
   const [uploads, setUploads] = useState<FileUploadStatus[]>([]);
-  const { firestore, user } = useUser();
   const [isNewDocDialogOpen, setIsNewDocDialogOpen] = useState(false);
   const [summaryDoc, setSummaryDoc] = useState<any | null>(null);
   const { toast } = useToast();
 
-  const documentsQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
-    return query(
-        collection(firestore, 'users', user.uid, 'documents'),
-        orderBy('uploadDate', 'desc')
-    );
-  }, [firestore, user]);
-
-  const { data: documents, isLoading } = useCollection(documentsQuery);
+  const { data: documents, isLoading } = useSupabaseCollection('documents');
   
   const handleNewUploads = (newUploads: FileUploadStatus[]) => {
     setUploads(prev => [...newUploads, ...prev]);
@@ -116,10 +105,19 @@ export default function DocumentsPage() {
   };
 
   const handleSummarizeAndArchive = async (docData: any) => {
-    if (!user || !firestore) return;
-    const docRef = doc(firestore, `users/${user.uid}/documents`, docData.id);
+    const { data, error } = await supabase
+      .from('documents')
+      .update({ processingStatus: 'queued' })
+      .eq('id', docData.id);
 
-    await updateDoc(docRef, { processingStatus: 'queued' });
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error updating document',
+        description: error.message,
+      });
+      return;
+    }
 
     toast({
         title: "Summarization Queued",
@@ -127,27 +125,21 @@ export default function DocumentsPage() {
     });
 
     try {
-        await updateDoc(docRef, { processingStatus: 'in-progress' });
-        
-        const result = await summarizeDocument({
-            documentContent: docData.content || `This is the content of the document named ${docData.filename}. In a real application, the full text would be extracted and passed here.`,
-        });
+      const { error: functionError } = await supabase.functions.invoke('summarize-and-archive', {
+        body: { documentId: docData.id },
+      })
 
-        await updateDoc(docRef, {
-            processingStatus: 'completed',
-            isArchived: true,
-            archivedAt: serverTimestamp(),
-            archiveSummary: result.summary,
-        });
-
-        toast({
-            title: "Summarization Complete",
-            description: `"${docData.filename}" has been successfully summarized and archived.`
-        });
+      if (functionError) {
+        throw functionError;
+      }
 
     } catch (e: any) {
         console.error("Summarization error:", e);
-        await updateDoc(docRef, { processingStatus: 'failed' });
+        await supabase
+          .from('documents')
+          .update({ processingStatus: 'failed' })
+          .eq('id', docData.id);
+
         toast({
             variant: "destructive",
             title: "Summarization Failed",
@@ -157,7 +149,7 @@ export default function DocumentsPage() {
   }
 
   const allDocs = (documents?.map(d => {
-      const uploadDate = d.uploadDate?.toDate ? d.uploadDate.toDate() : new Date();
+      const uploadDate = new Date(d.uploadDate);
       return {...d, uploadDate };
   }) || []);
   

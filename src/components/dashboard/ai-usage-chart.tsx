@@ -7,15 +7,6 @@ import {
 } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
-const chartData = [
-  { month: 'January', credits: 186 },
-  { month: 'February', credits: 305 },
-  { month: 'March', credits: 237 },
-  { month: 'April', credits: 73 },
-  { month: 'May', credits: 209 },
-  { month: 'June', credits: 214 },
-];
-
 const chartConfig = {
   credits: {
     label: 'AI Credits',
@@ -23,13 +14,13 @@ const chartConfig = {
   },
 };
 
-export function AiUsageChart() {
+export function AiUsageChart({ data }: { data: { label: string, credits: number }[] }) {
   return (
     <ChartContainer config={chartConfig} className="h-64">
-      <BarChart data={chartData} accessibilityLayer>
+      <BarChart data={data} accessibilityLayer>
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="month"
+          dataKey="label"
           tickLine={false}
           tickMargin={10}
           axisLine={false}

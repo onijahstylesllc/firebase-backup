@@ -34,12 +34,7 @@ import {
 import { Logo } from '../logo';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-
-type User = {
-  name: string;
-  email: string;
-  avatar: string;
-};
+import { User } from '@/lib/types';
 
 const mainNav = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -74,13 +69,9 @@ export function SidebarNav({ user, isSheet = false }: { user: User, isSheet?: bo
   const pathname = usePathname();
 
   const isActive = (path: string) => {
-    if (path === '/documents' && pathname.startsWith('/documents')) return true;
-    if (path === '/settings' && pathname.startsWith('/settings')) return true;
-    if (path === '/teams' && pathname.startsWith('/teams')) return true;
-    if (path === '/templates' && pathname.startsWith('/templates')) return true;
-    if (aiTools.some(tool => path === tool.href && pathname.startsWith(tool.href))) return true;
-    if (pdfTools.some(tool => path === tool.href && pathname.startsWith(tool.href))) return true;
-    return pathname === path;
+    // Check for exact match or if the pathname starts with the path followed by a '/' or another character.
+    // This prevents partial matches like '/documents' being active for '/documents-new'
+    return pathname === path || pathname.startsWith(`${path}/`);
   };
   
   const allTools = [...pdfTools, ...aiTools];
@@ -105,7 +96,7 @@ export function SidebarNav({ user, isSheet = false }: { user: User, isSheet?: bo
             <AccordionItem value="ai-tools" className="border-none">
                 <AccordionTrigger className={cn(
                   "py-2 px-3 text-sm flex items-center gap-3 rounded-lg text-muted-foreground transition-all hover:text-primary hover:no-underline [&[data-state=open]>svg]:rotate-180",
-                  allTools.some(tool => pathname.startsWith(tool.href)) && "text-primary"
+                  allTools.some(tool => isActive(tool.href)) && "text-primary"
                   )}>
                      <Sparkles className="h-4 w-4" />
                     AI & PDF Tools

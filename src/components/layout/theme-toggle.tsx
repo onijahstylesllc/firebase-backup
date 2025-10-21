@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -15,6 +14,20 @@ import {
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  // When mounted on client, we can show the UI
+  React.useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    // To prevent layout shifts, render a placeholder
+    return (
+      <Button variant="outline" size="icon" disabled>
+        <Sun className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
@@ -39,5 +52,3 @@ export function ThemeToggle() {
     </DropdownMenu>
   );
 }
-
-    

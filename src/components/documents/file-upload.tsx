@@ -2,9 +2,7 @@
 'use client';
 
 import React, { useRef, ReactNode } from 'react';
-import { useFirebase } from '@/firebase';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { supabase } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -31,55 +29,54 @@ export function FileUpload({
   onUploadStatusChange,
   acceptedFileTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
 }: FileUploadProps) {
-  const { firestore, user } = useFirebase();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const uploadFile = (upload: FileUploadStatus) => {
-    if (!user || !firestore) return;
+  const uploadFile = async (upload: FileUploadStatus) => {
+    try {
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) throw new Error('User not authenticated');
 
-    const storage = getStorage();
-    // Use the unique upload ID in the storage path to prevent overwrites
-    const storagePath = `users/${user.uid}/documents/${upload.id}-${upload.file.name}`;
-    const storageRef = ref(storage, storagePath);
-    const uploadTask = uploadBytesResumable(storageRef, upload.file);
+      const filePath = `public/${user.id}/${upload.id}-${upload.file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(filePath, upload.file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: upload.file.type,
+        });
 
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        onUploadProgress(upload.id, progress);
-      },
-      (error) => {
-        console.error('Upload failed:', error);
-        onUploadStatusChange(upload.id, 'failed', error.message);
-      },
-      async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        
-        try {
-            if (!user) throw new Error("User not authenticated");
-            const userDocsCollection = collection(firestore, 'users', user.uid, 'documents');
-            await addDoc(userDocsCollection, {
-                filename: upload.file.name,
-                owner: user.displayName || user.email,
-                uploadDate: serverTimestamp(),
-                fileSize: upload.file.size,
-                contentType: upload.file.type,
-                storageLocation: storagePath,
-                downloadURL: downloadURL,
-            });
-            onUploadStatusChange(upload.id, 'completed');
-        } catch (error) {
-            console.error("Error adding document to Firestore:", error);
-            onUploadStatusChange(upload.id, 'failed', (error as Error).message);
-        }
+      if (uploadError) {
+        throw uploadError;
       }
-    );
+
+      const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(filePath);
+
+      const { error: dbError } = await supabase.from('documents').insert([
+        {
+          filename: upload.file.name,
+          owner: user.email,
+          uploadDate: new Date().toISOString(),
+          fileSize: upload.file.size,
+          contentType: upload.file.type,
+          storageLocation: filePath,
+          downloadURL: publicUrl,
+        },
+      ]);
+
+      if (dbError) {
+        throw dbError;
+      }
+
+      onUploadStatusChange(upload.id, 'completed');
+    } catch (error: any) {
+      console.error('Upload failed:', error);
+      onUploadStatusChange(upload.id, 'failed', error.message);
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (!files || !user) return;
+    if (!files) return;
     
     const newUploads: FileUploadStatus[] = Array.from(files).map(file => {
       const id = uuidv4();

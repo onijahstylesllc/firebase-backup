@@ -2,8 +2,7 @@
 'use client';
 
 import React, { useRef, ReactNode } from 'react';
-import { useFirebase } from '@/firebase';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { supabase } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ImageUploadStatus {
@@ -32,36 +31,36 @@ export function ImageUploader({
   onUploadCompleted,
   acceptedFileTypes = ['image/jpeg', 'image/png', 'image/gif'],
 }: ImageUploaderProps) {
-  const { user } = useFirebase();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const uploadFile = (upload: ImageUploadStatus) => {
+  const uploadFile = async (upload: ImageUploadStatus) => {
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const storage = getStorage();
-    const storagePath = `users/${user.uid}/document-images/${documentId}/${upload.id}-${upload.file.name}`;
-    const storageRef = ref(storage, storagePath);
-    const uploadTask = uploadBytesResumable(storageRef, upload.file);
+    const storagePath = `document-images/${documentId}/${upload.id}-${upload.file.name}`;
+    
+    const { data, error } = await supabase.storage
+      .from('documents')
+      .upload(storagePath, upload.file, {
+        cacheControl: '3600',
+        upsert: false,
+        //TODO: Progress tracking is not directly supported in the same way as Firebase.
+        //You might need a different approach for progress bars, e.g., using a separate library or a server-side solution.
+      });
 
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        onUploadProgress(upload.id, progress);
-      },
-      (error) => {
-        console.error('Image upload failed:', error);
-        // Maybe add an onUploadFailed callback if needed
-      },
-      async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        onUploadCompleted(upload.id, downloadURL);
-      }
-    );
+    if (error) {
+      console.error('Image upload failed:', error);
+      // Maybe add an onUploadFailed callback if needed
+      return;
+    }
+    
+    const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(storagePath);
+    onUploadCompleted(upload.id, publicUrl);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
+    const { data: { user } } = await supabase.auth.getUser();
     if (!files || !user) return;
     
     const newUploads: ImageUploadStatus[] = Array.from(files).map(file => {
@@ -70,7 +69,7 @@ export function ImageUploader({
         id,
         file,
         status: 'uploading',
-        progress: 0,
+        progress: 0, // Progress is not tracked with this implementation
       };
     });
 
@@ -102,5 +101,3 @@ export function ImageUploader({
     </>
   );
 }
-    
-    
