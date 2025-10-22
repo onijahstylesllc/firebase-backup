@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/tooltip"
 import { cn } from '@/lib/utils';
 import { User } from '@supabase/supabase-js';
+import { ThreeDot } from 'react-loading-indicators';
 
 interface ThreadData {
   id: string;
@@ -118,7 +119,7 @@ function ThreadItem({ thread, onTogglePin, onUpdateBadge, onAccordionToggle }: {
             </AccordionTrigger>
             <AccordionContent className="px-4 pb-4">
                 <div className="border-t pt-4 space-y-4 max-h-96 overflow-y-auto">
-                    {isLoadingMessages && <Skeleton className="h-10 w-full" />}
+                    {isLoadingMessages && <ThreeDot color="#32cd32" size="medium" text="" textColor="" />}
                     {messages.map(msg => <ChatMessage key={msg.id} sender={msg.sender} content={msg.content} />)}
                 </div>
                 <div className="border-t pt-4 mt-4 flex items-center gap-2">

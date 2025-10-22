@@ -21,6 +21,8 @@ const config = {
       fontFamily: {
         body: ["var(--font-body)"],
         headline: ["var(--font-headline)"],
+        code: ["var(--font-code)"],
+        pixel: ["var(--font-pixel)"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -1,30 +1,40 @@
+'use client';
 
-import { Skeleton } from "@/components/ui/skeleton"
-import { Card, CardContent } from "@/components/ui/card"
+import ContentLoader from 'react-content-loader';
+import { Card, CardContent } from '@/components/ui/card';
+import { useTheme } from 'next-themes';
 
 export function TestimonialCarouselSkeleton() {
-  return (
-    <div className="flex space-x-4 overflow-hidden">
-      {[...Array(3)].map((_, i) => (
-        <div key={i} className="p-4 w-full md:w-1/2 lg:w-1/3 shrink-0">
-          <Card className="h-full flex flex-col text-center">
-            <CardContent className="pt-6 flex-1 flex flex-col items-center justify-center">
-              <Skeleton className="w-20 h-20 rounded-full mb-4" />
-              <div className="space-y-2 flex-1">
-                <Skeleton className="h-4 w-64" />
-                <Skeleton className="h-4 w-56" />
-                <Skeleton className="h-4 w-60" />
-              </div>
-              <div className="mt-auto w-full space-y-2">
-                 <Skeleton className="h-5 w-32 mx-auto" />
-                 <Skeleton className="h-4 w-24 mx-auto" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      ))}
-    </div>
-  )
-}
+  const { resolvedTheme } = useTheme();
+  const isDarkMode = resolvedTheme === 'dark';
 
-    
+  const backgroundColor = isDarkMode ? '#333' : '#f0f0f0';
+  const foregroundColor = isDarkMode ? '#555' : '#e0e0e0';
+
+  return (
+    <Card className="w-full max-w-xl mx-auto">
+        <CardContent className="p-8 text-center flex flex-col items-center">
+            <ContentLoader 
+              speed={1.5}
+              width={400} 
+              height={220}
+              viewBox="0 0 400 220" 
+              backgroundColor={backgroundColor}
+              foregroundColor={foregroundColor}
+            >
+              {/* Avatar */}
+              <circle cx="200" cy="60" r="40" />
+
+              {/* Testimonial text lines */}
+              <rect x="50" y="120" rx="4" ry="4" width="300" height="10" />
+              <rect x="75" y="140" rx="4" ry="4" width="250" height="10" />
+              <rect x="100" y="160" rx="4" ry="4" width="200" height="10" />
+
+              {/* Author info */}
+              <rect x="150" y="190" rx="3" ry="3" width="100" height="8" />
+              <rect x="165" y="205" rx="3" ry="3" width="70" height="6" />
+            </ContentLoader>
+        </CardContent>
+    </Card>
+  );
+}

@@ -2,7 +2,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Figtree, Bricolage_Grotesque, Press_Start_2P, VT323 } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
@@ -18,14 +18,26 @@ import { ParallaxProvider } from '@/components/parallax-provider';
 import { supabase } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 
-const fontBody = Inter({
+const fontBody = Figtree({
   subsets: ['latin'],
   variable: '--font-body',
 });
 
-const fontHeadline = Space_Grotesk({
+const fontHeadline = Bricolage_Grotesque({
   subsets: ['latin'],
   variable: '--font-headline',
+});
+
+const fontCode = VT323({
+  subsets: ['latin'],
+  variable: '--font-code',
+  weight: '400',
+});
+
+const fontPixel = Press_Start_2P({
+  subsets: ['latin'],
+  variable: '--font-pixel',
+  weight: '400',
 });
 
 const unprotectedRoutes = ['/', '/login'];
@@ -129,7 +141,9 @@ export default function RootLayout({
         className={cn(
           'antialiased',
           fontBody.variable,
-          fontHeadline.variable
+          fontHeadline.variable,
+          fontCode.variable,
+          fontPixel.variable
         )}
       >
         <ThemeProvider

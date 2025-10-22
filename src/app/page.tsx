@@ -1,3 +1,4 @@
+
 'use client'
 
 import { Button } from '@/components/ui/button'
@@ -30,7 +31,6 @@ import {
   FileEdit,
   Languages,
   Landmark,
-  Home,
   Building,
   FileCheck,
   Users,
@@ -41,14 +41,15 @@ import {
   UploadCloud,
 } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
-import React, { Suspense, useEffect, useState, useRef } from 'react'
+import React, { Suspense, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TestimonialCarouselSkeleton } from '@/components/landing/testimonial-carousel-skeleton'
 import { useParallax } from 'react-scroll-parallax'
-import { useTypingAnimation } from '@/hooks/use-typing-animation'
+import TextType from '@/components/TextType';
+import CurvedLoop from '@/components/CurvedLoop';
+import LogoLoop from '@/components/LogoLoop';
+import { FaStripe, FaLinkedin, FaAmazon, FaGoogle, FaMicrosoft, FaApple, FaFacebook, FaNetflix, FaSpotify, FaSalesforce, FaAdobe, FaOracle, FaIbm, FaIntel, FaCisco, FaUber, FaAirbnb, FaPaypal, FaShopify, FaSlack } from 'react-icons/fa';
 
 const TestimonialCarousel = dynamic(
   () => import('@/components/landing/testimonial-carousel').then(mod => mod.TestimonialCarousel),
@@ -94,13 +95,6 @@ const trustBadges = [
   { icon: Server, title: '99.9% Uptime', description: 'Reliable access to your documents when you need them.' },
 ]
 
-const teamFeatures = [
-  { icon: Edit, title: 'Real-Time Co-Editing', description: 'Work on the same document simultaneously.' },
-  { icon: MessageSquare, title: 'AI-Powered Comments', description: 'Get AI suggestions for task assignment.' },
-  { icon: FileCheck, title: 'Secure Sharing', description: 'Control permissions for viewers and editors.' },
-  { icon: BookCopy, title: 'Shared Templates', description: 'Maintain brand consistency with templates.' },
-]
-
 const useCases = [
   { icon: Scale, title: 'Legal Professionals', benefits: ['Analyze contracts for risks', 'Summarize case law quickly', 'Automate compliance checks', 'Find clauses instantly'] },
   { icon: Target, title: 'Marketing Teams', benefits: ['Ensure brand consistency', 'Generate campaign ideas', 'Summarize market research', 'Rewrite copy instantly'] },
@@ -114,7 +108,7 @@ const solutions = {
   industries: [
     { icon: Landmark, title: 'Financial Services', description: 'Enhance compliance and accelerate onboarding.' },
     { icon: FileCheck, title: 'Insurance', description: 'Streamline claims processing.' },
-    { icon: Home, title: 'Real Estate', description: 'Manage contracts and leases.' },
+    { icon: Building, title: 'Real Estate', description: 'Manage contracts and leases.' },
     { icon: Building, title: 'Government', description: 'Improve records management.' },
   ],
   businessSizes: [
@@ -130,31 +124,35 @@ const pricingTiers = [
   { name: 'Enterprise', price: 'Custom', description: 'For large organizations.', features: ['Custom AI models', 'Dedicated infrastructure', 'Advanced security', '24/7 support'], cta: 'Contact Sales' },
 ]
 
-const howItWorksSteps = [
-  { step: 1, title: 'Upload Any Document', description: 'Drag and drop any PDF, DOCX, or image. AI instantly structures the content.' },
-  { step: 2, title: 'AI Analysis Begins', description: 'Scans for key entities, clauses, and risks in seconds.' },
-  { step: 3, title: 'Command Your Document', description: 'Ask for summaries, translations, or compliance checks.' },
-]
-
-const aiToolkit = [
-  { icon: LineChart, title: 'Analyze Anything', description: 'Get instant summaries and sentiment analysis.' },
-  { icon: Gavel, title: 'Legal Guardian', description: 'Check for risks and compliance.' },
-  { icon: Users, title: 'Meeting Genius', description: 'Turn transcripts into action items.' },
-  { icon: Calculator, title: 'Math Whiz', description: 'Solve equations with explanations.' },
-]
-
-const companyLogos = ['QuantumLeap', 'ApexSphere', 'NexusCore', 'StellarForge', 'Vertex Inc.', 'NovaGen', 'BlueHorizon', 'Zenith Corp', 'Momentum AI', 'Innovate IO', 'Synergy Labs', 'TerraFirm']
-const typingWords = [' Intelligently', ' Instantly', ' Effortlessly', ' Powerfully'];
-
+const techLogos = [
+  { node: <FaStripe />, title: "Stripe" },
+  { node: <FaLinkedin />, title: "LinkedIn" },
+  { node: <FaAmazon />, title: "Amazon" },
+  { node: <FaGoogle />, title: "Google" },
+  { node: <FaMicrosoft />, title: "Microsoft" },
+  { node: <FaApple />, title: "Apple" },
+  { node: <FaFacebook />, title: "Facebook" },
+  { node: <FaNetflix />, title: "Netflix" },
+  { node: <FaSpotify />, title: "Spotify" },
+  { node: <FaSalesforce />, title: "Salesforce" },
+  { node: <FaAdobe />, title: "Adobe" },
+  { node: <FaOracle />, title: "Oracle" },
+  { node: <FaIbm />, title: "IBM" },
+  { node: <FaIntel />, title: "Intel" },
+  { node: <FaCisco />, title: "Cisco" },
+  { node: <FaUber />, title: "Uber" },
+  { node: <FaAirbnb />, title: "Airbnb" },
+  { node: <FaPaypal />, title: "Paypal" },
+  { node: <FaShopify />, title: "Shopify" },
+  { node: <FaSlack />, title: "Slack" },
+];
 
 
 export default function Home() {
-  const typedWord = useTypingAnimation(typingWords)
-  const featuresRef = useRef(null)
-  const featuresParallax = useParallax<HTMLDivElement>({
+  const featuresParallax = useParallax<HTMLElement>({
     speed: 10,
     rootMargin: { top: 0, right: 0, bottom: -500, left: 0 },
-  })
+  });
 
 
   return (
@@ -188,8 +186,14 @@ export default function Home() {
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
               <div className="flex flex-col justify-center space-y-6 text-center lg:text-left">
                 <h1 className="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl xl:text-7xl/none">
-                  Work with PDFs, <span className="text-primary">{typedWord}</span>
-                  <span className="animate-blink">|</span>
+                  <TextType 
+                    text={["Text typing effect", "for your websites", "Happy coding!"]}
+                    typingSpeed={75}
+                    pauseDuration={1500}
+                    showCursor={true}
+                    cursorCharacter="_"
+                    className="text-primary"
+                  />
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl mx-auto lg:mx-0">
                   DocuMind AI is the world's first intelligent document workspace. Go beyond editing and leverage AI to analyze, create, and collaborate.
@@ -239,14 +243,22 @@ export default function Home() {
         {/* Trusted By */}
         <section className="py-12">
           <div className="container px-4 md:px-6">
-            <p className="text-center text-sm font-semibold uppercase text-muted-foreground tracking-wider mb-6">Trusted by the brands you trust</p>
-            <div className="relative flex h-10 w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]">
-              <div className="flex animate-marquee items-center">
-                {[...companyLogos, ...companyLogos].map((logo, index) => (
-                  <p key={index} className="mx-8 flex-shrink-0 text-lg font-bold text-muted-foreground/60">{logo}</p>
-                ))}
-              </div>
-            </div>
+            <CurvedLoop 
+              marqueeText="Trusted by the brands you trust ✦ Trusted by the brands you trust ✦ Trusted by the brands you trust ✦ " 
+              speed={1}
+              curveAmount={100}/>
+            <LogoLoop
+              logos={techLogos}
+              speed={120}
+              direction="left"
+              logoHeight={48}
+              gap={40}
+              pauseOnHover
+              scaleOnHover
+              fadeOut
+              fadeOutColor="#ffffff"
+              ariaLabel="Technology partners"
+            />
           </div>
         </section>
 
