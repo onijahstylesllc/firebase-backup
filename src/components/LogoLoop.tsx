@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './LogoLoop.css';
 
@@ -50,11 +52,8 @@ const useResizeObserver = (
   dependencies: React.DependencyList
 ) => {
   useEffect(() => {
-    if (!window.ResizeObserver) {
-      const handleResize = () => callback();
-      window.addEventListener('resize', handleResize);
-      callback();
-      return () => window.removeEventListener('resize', handleResize);
+    if (typeof window === 'undefined' || !window.ResizeObserver) {
+      return;
     }
 
     const observers = elements.map(ref => {
@@ -69,6 +68,7 @@ const useResizeObserver = (
     return () => {
       observers.forEach(observer => observer?.disconnect());
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 };
 
@@ -78,13 +78,11 @@ const useImageLoader = (
   dependencies: React.DependencyList
 ) => {
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const images = seqRef.current?.querySelectorAll('img') ?? [];
 
     if (images.length === 0) {
-      // If there are no images, we don't need to wait for them to load.
-      // The resize observer will handle the initial dimension calculation.
-      // The original code called onLoad() here, which caused an infinite loop.
-      return;
+        return;
     }
 
     let remainingImages = images.length;
@@ -111,6 +109,7 @@ const useImageLoader = (
         img.removeEventListener('error', handleImageLoad);
       });
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 };
 
@@ -128,7 +127,7 @@ const useAnimationLoop = (
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track || typeof window === 'undefined') return;
 
     if (seqWidth > 0) {
       offsetRef.current = ((offsetRef.current % seqWidth) + seqWidth) % seqWidth;
@@ -172,8 +171,7 @@ const useAnimationLoop = (
   }, [targetVelocity, seqWidth, isHovered, pauseOnHover]);
 };
 
-export const LogoLoop = React.memo<LogoLoopProps>(
-  ({
+const LogoLoopComponent: React.FC<LogoLoopProps> = ({
     logos,
     speed = 120,
     direction = 'left',
@@ -332,8 +330,6 @@ export const LogoLoop = React.memo<LogoLoopProps>(
       </div>
     );
   }
-);
 
+export const LogoLoop = React.memo(LogoLoopComponent);
 LogoLoop.displayName = 'LogoLoop';
-
-export default LogoLoop;

@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { PostgrestError } from '@supabase/supabase-js';
+import { useSupabase } from '@/lib/supabase-provider';
 
 /**
  * Interface for the return value of the useSupabaseCollection hook.
@@ -26,6 +26,7 @@ export interface UseSupabaseCollectionResult<T> {
 export function useSupabaseCollection<T extends { id: any }> (
     tableName: string | null | undefined,
 ): UseSupabaseCollectionResult<T> {
+  const { supabase } = useSupabase();
   const [data, setData] = useState<T[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<PostgrestError | null>(null);
@@ -110,8 +111,7 @@ export function useSupabaseCollection<T extends { id: any }> (
       isMounted = false;
       supabase.removeChannel(subscription);
     };
-  }, [tableName]);
+  }, [tableName, supabase]);
 
   return { data, isLoading, error };
 }
-

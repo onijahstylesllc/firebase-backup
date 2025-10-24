@@ -1,11 +1,32 @@
-
 'use client';
 
-import { useEffect, useRef, useState, createElement, useMemo, useCallback } from 'react';
+import { useEffect, useRef, useState, createElement, useMemo, useCallback, FC, ElementType } from 'react';
 import { gsap } from 'gsap';
 import './TextType.css';
 
-const TextType = ({
+// Define the props type explicitly
+interface TextTypeProps {
+  text: string | string[];
+  as?: ElementType;
+  typingSpeed?: number;
+  initialDelay?: number;
+  pauseDuration?: number;
+  deletingSpeed?: number;
+  loop?: boolean;
+  className?: string;
+  showCursor?: boolean;
+  hideCursorWhileTyping?: boolean;
+  cursorCharacter?: string;
+  cursorClassName?: string;
+  cursorBlinkDuration?: number;
+  variableSpeed?: boolean | { min: number; max: number };
+  onSentenceComplete?: (sentence: string, index: number) => void;
+  startOnVisible?: boolean;
+  reverseMode?: boolean;
+  [key: string]: any; // For ...props
+}
+
+const TextType: FC<TextTypeProps> = ({
   text,
   as: Component = 'div',
   typingSpeed = 50,
@@ -19,8 +40,8 @@ const TextType = ({
   cursorCharacter = '|',
   cursorClassName = '',
   cursorBlinkDuration = 0.5,
-  variableSpeed,
-  onSentenceComplete,
+  variableSpeed = false,
+  onSentenceComplete = () => {},
   startOnVisible = false,
   reverseMode = false,
   ...props
@@ -36,9 +57,11 @@ const TextType = ({
   const textArray = useMemo(() => (Array.isArray(text) ? text : [text]), [text]);
 
   const getRandomSpeed = useCallback(() => {
-    if (!variableSpeed) return typingSpeed;
-    const { min, max } = variableSpeed;
-    return Math.random() * (max - min) + min;
+    if (typeof variableSpeed === 'object' && variableSpeed !== null) {
+      const { min, max } = variableSpeed;
+      return Math.random() * (max - min) + min;
+    }
+    return typingSpeed;
   }, [variableSpeed, typingSpeed]);
 
   useEffect(() => {
@@ -75,7 +98,7 @@ const TextType = ({
   useEffect(() => {
     if (!isVisible) return;
 
-    let timeout;
+    let timeout: NodeJS.Timeout;
     const currentText = textArray[currentTextIndex];
     const processedText = reverseMode ? currentText.split('').reverse().join('') : currentText;
 
@@ -123,7 +146,6 @@ const TextType = ({
     }
 
     return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentCharIndex,
     displayedText,
@@ -137,7 +159,9 @@ const TextType = ({
     initialDelay,
     isVisible,
     reverseMode,
-    variableSpeed
+    variableSpeed,
+    onSentenceComplete,
+    getRandomSpeed,
   ]);
 
   return createElement(

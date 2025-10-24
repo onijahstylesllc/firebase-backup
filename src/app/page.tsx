@@ -41,15 +41,16 @@ import {
   UploadCloud,
 } from 'lucide-react'
 import Link from 'next/link'
-import React, { Suspense, useRef } from 'react'
+import React, { Suspense, useRef, useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { useTheme } from 'next-themes'
 import { TestimonialCarouselSkeleton } from '@/components/landing/testimonial-carousel-skeleton'
 import { useParallax } from 'react-scroll-parallax'
 import TextType from '@/components/TextType';
 import CurvedLoop from '@/components/CurvedLoop';
-import LogoLoop from '@/components/LogoLoop';
-import { FaStripe, FaLinkedin, FaAmazon, FaGoogle, FaMicrosoft, FaApple, FaFacebook, FaNetflix, FaSpotify, FaSalesforce, FaAdobe, FaOracle, FaIbm, FaIntel, FaCisco, FaUber, FaAirbnb, FaPaypal, FaShopify, FaSlack } from 'react-icons/fa';
+import { FaStripe, FaLinkedin, FaAmazon, FaGoogle, FaMicrosoft, FaApple, FaFacebook, FaSpotify, FaSalesforce, FaUber, FaAirbnb, FaPaypal, FaShopify, FaSlack } from 'react-icons/fa';
+import PillNav from '@/components/PillNav';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const TestimonialCarousel = dynamic(
   () => import('@/components/landing/testimonial-carousel').then(mod => mod.TestimonialCarousel),
@@ -63,6 +64,12 @@ const MobileNav = dynamic(
     () => import('@/components/layout/mobile-nav').then(mod => mod.MobileNav),
     { ssr: false }
 )
+
+const LogoLoop = dynamic(
+  () => import('@/components/LogoLoop').then(mod => mod.LogoLoop),
+  { ssr: false }
+);
+
 
 const mainTools = [
   { icon: Edit, title: 'Edit PDF', description: 'Edit text, rearrange, or replace content.', href: '/documents' },
@@ -132,14 +139,8 @@ const techLogos = [
   { node: <FaMicrosoft />, title: "Microsoft" },
   { node: <FaApple />, title: "Apple" },
   { node: <FaFacebook />, title: "Facebook" },
-  { node: <FaNetflix />, title: "Netflix" },
   { node: <FaSpotify />, title: "Spotify" },
   { node: <FaSalesforce />, title: "Salesforce" },
-  { node: <FaAdobe />, title: "Adobe" },
-  { node: <FaOracle />, title: "Oracle" },
-  { node: <FaIbm />, title: "IBM" },
-  { node: <FaIntel />, title: "Intel" },
-  { node: <FaCisco />, title: "Cisco" },
   { node: <FaUber />, title: "Uber" },
   { node: <FaAirbnb />, title: "Airbnb" },
   { node: <FaPaypal />, title: "Paypal" },
@@ -149,35 +150,59 @@ const techLogos = [
 
 
 export default function Home() {
-  const featuresParallax = useParallax<HTMLElement>({
-    speed: 10,
-    rootMargin: { top: 0, right: 0, bottom: -500, left: 0 },
-  });
+  const { resolvedTheme, setTheme } = useTheme();
+  const [fadeOutColor, setFadeOutColor] = useState('#ffffff');
+  const [baseColor, setBaseColor] = useState('#000000');
+  const [pillColor, setPillColor] = useState('#ffffff');
+  const [hoveredPillTextColor, setHoveredPillTextColor] = useState('#ffffff');
+  const [pillTextColor, setPillTextColor] = useState('#000000');
+
+  useEffect(() => {
+    if (resolvedTheme === 'dark') {
+      setFadeOutColor('hsl(204 10% 10%)');
+      setBaseColor('#000000');
+      setPillColor('#ffffff');
+      setHoveredPillTextColor('#ffffff');
+      setPillTextColor('#000000');
+    } else {
+      setFadeOutColor('#ffffff');
+      setBaseColor('#ffffff');
+      setPillColor('#ffffff');
+      setHoveredPillTextColor('#ffffff');
+      setPillTextColor('#000000');
+    }
+  }, [resolvedTheme]);
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  };
 
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="h-8 w-8 text-primary" />
-            <span className="hidden font-bold font-headline text-lg sm:inline-block">DocuMind AI</span>
-          </Link>
-          <nav className="hidden flex-1 items-center space-x-6 md:flex">
-            <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Features</Link>
-            <Link href="#solutions" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Solutions</Link>
-            <Link href="#testimonials" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Testimonials</Link>
-            <Link href="#pricing" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Pricing</Link>
-          </nav>
-          <div className="hidden items-center space-x-2 md:flex">
-            <ThemeToggle />
-            <Button variant="ghost" asChild><Link href="/login">Sign In</Link></Button>
-            <Button asChild><Link href="/dashboard">Get Started Free <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
-          </div>
-          <MobileNav />
-        </div>
-      </header>
+      <PillNav
+        logo="/logo.svg"
+        logoAlt="DocuMind AI"
+        items={[
+          { label: 'Features', href: '#features' },
+          { label: 'Solutions', href: '#solutions' },
+          { label: 'Testimonials', href: '#testimonials' },
+          { label: 'Pricing', href: '#pricing' },
+        ]}
+        activeHref="/"
+        className="custom-nav"
+        ease="power2.easeOut"
+        baseColor={baseColor}
+        pillColor={pillColor}
+        hoveredPillColor="#00b3b3"
+        hoveredPillTextColor={hoveredPillTextColor}
+        pillTextColor={pillTextColor}
+      />
+      <ThemeToggle 
+        isDarkMode={resolvedTheme === 'dark'} 
+        toggleTheme={toggleTheme} 
+      />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -256,7 +281,7 @@ export default function Home() {
               pauseOnHover
               scaleOnHover
               fadeOut
-              fadeOutColor="#ffffff"
+              fadeOutColor={fadeOutColor}
               ariaLabel="Technology partners"
             />
           </div>
@@ -285,7 +310,7 @@ export default function Home() {
         </section>
 
         {/* Features */}
-        <section id="features" ref={featuresParallax.ref} className="w-full py-20 md:py-32">
+        <div id="features" className="w-full py-20 md:py-32">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center text-center space-y-4 mb-12">
               <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary font-semibold">Features</div>
@@ -308,7 +333,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
+        </div>
 
         {/* Pricing */}
         <section id="pricing" className="w-full py-20 md:py-32 bg-muted/40">
@@ -355,8 +380,8 @@ export default function Home() {
       <footer className="flex w-full shrink-0 flex-col items-center gap-2 border-t bg-muted/40 px-4 py-6 sm:flex-row md:px-6">
         <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} DocuMind AI. All rights reserved.</p>
         <nav className="flex gap-4 sm:ml-auto sm:gap-6">
-          <Link href="#" className="text-xs hover:underline underline-offset-4">Terms of Service</Link>
           <Link href="#" className="text-xs hover:underline underline-offset-4">Privacy</Link>
+          <Link href="#" className="text-xs hover:underline underline-offset-4">Terms of Service</Link>
         </nav>
       </footer>
     </div>

@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import { summarizeDocument } from '../_utils/ai-flows'
+import { summarizeMeetingContext } from '../../src/ai/flows/ai-summarize-meeting-context'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,8 +29,9 @@ self.addEventListener('message', async (event) => {
     }
 
     // 3. Run summarization
-    const { summary } = await summarizeDocument({
+    const { summary } = await summarizeMeetingContext({
         documentContent: doc.content || `This is the content of the document named ${doc.filename}. In a real application, the full text would be extracted and passed here.`,
+        meetingTranscript: ''
     });
 
     // 4. Update document with summary and mark as complete
@@ -52,6 +53,8 @@ self.addEventListener('message', async (event) => {
       .update({ processingStatus: 'failed' })
       .eq('id', documentId)
 
-    self.postMessage({ success: false, error: error.message })
+    if (error instanceof Error) {
+        self.postMessage({ success: false, error: error.message })
+    }
   }
 })

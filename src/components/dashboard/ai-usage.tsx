@@ -32,16 +32,20 @@ export function AiUsage() {
   const [timeUnit, setTimeUnit] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
   const [usageData, setUsageData] = useState<UsageData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
     async function fetchData() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       setIsLoading(true);
       try {
-        // The getUsageData function will need to be adapted for Supabase
-        // This is a placeholder for the actual implementation
-        const data = await getUsageData(supabase, user.uid, timeUnit);
+        const data = await getUsageData(supabase, user.id, timeUnit);
         setUsageData(data);
       } catch (error: any) {
         console.error('Error fetching usage data:', error);
@@ -50,13 +54,13 @@ export function AiUsage() {
           title: 'Failed to fetch usage data',
           description: error.message || 'An unexpected error occurred. Please try again later.',
         });
-        setUsageData(placeholderData); // Fallback to placeholder data on error
+        setUsageData(placeholderData);
       } finally {
         setIsLoading(false);
       }
     }
     fetchData();
-  }, [timeUnit, toast]);
+  }, [timeUnit, toast, isClient]);
 
   const handleTabChange = (value: string) => {
     if (value === 'daily' || value === 'weekly' || value === 'monthly') {
@@ -87,28 +91,32 @@ export function AiUsage() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="monthly" className="w-full" onValueChange={handleTabChange}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="daily">Daily</TabsTrigger>
-            <TabsTrigger value="weekly">Weekly</TabsTrigger>
-            <TabsTrigger value="monthly">Monthly</TabsTrigger>
-            <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          </TabsList>
-          <TabsContent value="daily">
-            <ChartToShow />
-          </TabsContent>
-          <TabsContent value="weekly">
-            <ChartToShow />
-          </TabsContent>
-          <TabsContent value="monthly">
-            <ChartToShow />
-          </TabsContent>
-          <TabsContent value="calendar">
-            <div className="flex justify-center pt-4">
-              <Calendar mode="single" className="rounded-md border" />
-            </div>
-          </TabsContent>
-        </Tabs>
+        {isClient ? (
+          <Tabs defaultValue="monthly" className="w-full" onValueChange={handleTabChange}>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+              <TabsTrigger value="daily">Daily</TabsTrigger>
+              <TabsTrigger value="weekly">Weekly</TabsTrigger>
+              <TabsTrigger value="monthly">Monthly</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            </TabsList>
+            <TabsContent value="daily">
+              <ChartToShow />
+            </TabsContent>
+            <TabsContent value="weekly">
+              <ChartToShow />
+            </TabsContent>
+            <TabsContent value="monthly">
+              <ChartToShow />
+            </TabsContent>
+            <TabsContent value="calendar">
+              <div className="flex justify-center pt-4">
+                <Calendar mode="single" className="rounded-md border" />
+              </div>
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <Skeleton className="h-[350px] w-full" />
+        )}
       </CardContent>
     </Card>
   );
