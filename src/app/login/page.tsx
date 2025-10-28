@@ -1,7 +1,9 @@
 
 'use client'
 
-import { useState, useEffect } from 'react';
+export const dynamic = 'force-dynamic';
+
+import { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -38,7 +40,7 @@ const AuthLayout = ({ image, children }: { image: React.ReactNode, children: Rea
     </div>
 );
 
-export default function LoginPage() {
+function LoginPageContent() {
   const searchParams = useSearchParams();
   const [authStep, setAuthStep] = useState<AuthStep>('login');
   const [email, setEmail] = useState('');
@@ -470,5 +472,13 @@ export default function LoginPage() {
             </CardContent>
         </Card>
     </AuthLayout>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

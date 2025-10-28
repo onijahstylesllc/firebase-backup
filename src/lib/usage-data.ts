@@ -6,16 +6,16 @@ interface UsageData {
   credits: number;
 }
 
-async function getUsageData(supabase: SupabaseClient, userId: string, timeUnit: 'day' | 'week' | 'month'): Promise<UsageData[]> {
+async function getUsageData(supabase: SupabaseClient, userId: string, timeUnit: 'daily' | 'weekly' | 'monthly'): Promise<UsageData[]> {
   const now = new Date();
   const usageData: { [key: string]: number } = {};
 
   let startDate: Date;
-  if (timeUnit === 'day') {
+  if (timeUnit === 'daily') {
     startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
-  } else if (timeUnit === 'week') {
+  } else if (timeUnit === 'weekly') {
     startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-  } else { // month
+  } else { // monthly
     startDate = new Date(now.getFullYear(), now.getMonth() - 6, 1);
   }
 
@@ -32,24 +32,24 @@ async function getUsageData(supabase: SupabaseClient, userId: string, timeUnit: 
 
   if (data) {
     data.forEach(item => {
-        const timestamp = new Date(item.created_at);
-        const credits = item.credits_used;
+      const timestamp = new Date(item.created_at);
+      const credits = item.credits_used;
 
-        let key: string;
-        if (timeUnit === 'day') {
+      let key: string;
+      if (timeUnit === 'daily') {
         key = timestamp.toLocaleDateString();
-        } else if (timeUnit === 'week') {
+      } else if (timeUnit === 'weekly') {
         const weekStart = new Date(timestamp.getFullYear(), timestamp.getMonth(), timestamp.getDate() - timestamp.getDay());
         key = weekStart.toLocaleDateString();
-        } else { // month
+      } else { // monthly
         key = timestamp.toLocaleString('default', { month: 'long' });
-        }
+      }
 
-        if (usageData[key]) {
+      if (usageData[key]) {
         usageData[key] += credits;
-        } else {
+      } else {
         usageData[key] = credits;
-        }
+      }
     });
   }
 
