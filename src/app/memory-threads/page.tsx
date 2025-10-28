@@ -159,12 +159,11 @@ export default function MemoryThreadsPage() {
                 .select('*')
                 .eq('user_id', user.id);
             
-            if (data) {
-                setThreadsData(data);
-            }
             if (error) {
                 console.error("Error fetching threads:", error);
+                throw new Error(`Failed to fetch chat history: ${error.message}`);
             }
+            setThreadsData(data);
         }
         setIsLoading(false);
     };

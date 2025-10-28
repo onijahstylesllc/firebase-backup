@@ -18,9 +18,10 @@ export default function ProfilePage() {
           .select('*')
           .eq('id', user.id)
           .single();
-        if (data) {
-          setProfile(data);
+        if (error) {
+          throw new Error(`Failed to fetch profile: ${error.message}`);
         }
+        setProfile(data);
       }
     };
 
