@@ -33,7 +33,6 @@ import { Input } from '@/components/ui/input';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { supabase } from '@/lib/supabaseClient';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { chatWithDocument } from '@/ai/flows/ai-chat-flow';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -155,12 +154,33 @@ function AiChatAssistant({ documentId, documentData }: { documentId: string, doc
             content: [{ text: msg.content }],
         }));
 
-        const aiResponse = await chatWithDocument({
-            documentImage: visualModeEnabled && editorImage ? editorImage.imageUrl : undefined,
-            message: messageToSend,
-            history: chatHistory,
-            personalization: profile?.ai_preferences,
+        // Call the API endpoint instead of direct server function
+        const response = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                documentImage: visualModeEnabled && editorImage ? editorImage.imageUrl : undefined,
+                message: messageToSend,
+                history: chatHistory,
+                personalization: profile?.ai_preferences,
+            }),
         });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            
+            if (response.status === 429) {
+                throw new Error('Rate limit exceeded. Please wait a moment before sending another message.');
+            } else if (response.status === 401) {
+                throw new Error('You must be logged in to use AI chat.');
+            } else {
+                throw new Error(errorData.message || 'Failed to get AI response.');
+            }
+        }
+
+        const aiResponse = await response.json();
 
         const aiMessage = {
             thread_id: `${documentId}-main`,
@@ -176,7 +196,7 @@ function AiChatAssistant({ documentId, documentData }: { documentId: string, doc
         const errorMessage = {
             thread_id: `${documentId}-main`,
             sender: 'ai',
-            content: "Sorry, I ran into an error. This could be due to a missing API key for the AI service. Please check your environment variables.",
+            content: error instanceof Error ? error.message : "Sorry, I ran into an error. This could be due to a missing API key for the AI service. Please check your environment variables.",
         };
         setMessages(prev => [...prev, errorMessage]);
         await supabase.from('ai_messages').insert([errorMessage]);
