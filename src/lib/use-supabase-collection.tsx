@@ -16,15 +16,26 @@ export interface UseSupabaseCollectionResult<T> {
 }
 
 /**
+ * Query options for filtering and ordering data.
+ */
+export interface SupabaseCollectionQueryOptions {
+  orderBy?: string;
+  ascending?: boolean;
+  limit?: number;
+}
+
+/**
  * React hook to subscribe to a Supabase table in real-time.
  * Fetches initial data and then listens for INSERT, UPDATE, and DELETE events.
  *
  * @template T Optional type for table row data.
  * @param {string | null | undefined} tableName - The name of the Supabase table to subscribe to.
+ * @param {SupabaseCollectionQueryOptions} options - Optional query options for ordering and limiting results.
  * @returns {UseSupabaseCollectionResult<T>} Object with data, isLoading, and error.
  */
 export function useSupabaseCollection<T extends { id: any }> (
     tableName: string | null | undefined,
+    options?: SupabaseCollectionQueryOptions,
 ): UseSupabaseCollectionResult<T> {
   const { supabase } = useSupabase();
   const [data, setData] = useState<T[] | null>(null);
@@ -46,9 +57,17 @@ export function useSupabaseCollection<T extends { id: any }> (
       setIsLoading(true);
       setError(null);
 
-      const { data: initialData, error: initialError } = await supabase
-        .from(tableName)
-        .select('*');
+      let query = supabase.from(tableName).select('*');
+
+      if (options?.orderBy) {
+        query = query.order(options.orderBy, { ascending: options.ascending ?? true });
+      }
+
+      if (options?.limit) {
+        query = query.limit(options.limit);
+      }
+
+      const { data: initialData, error: initialError } = await query;
 
       if (!isMounted) return;
 
@@ -111,7 +130,7 @@ export function useSupabaseCollection<T extends { id: any }> (
       isMounted = false;
       supabase.removeChannel(subscription);
     };
-  }, [tableName, supabase]);
+  }, [tableName, supabase, options?.orderBy, options?.ascending, options?.limit]);
 
   return { data, isLoading, error };
 }
