@@ -97,14 +97,9 @@ export default function DocumentsPage() {
       const { data, error } = await supabase.from('documents').select('*');
       if (error) {
         console.error('Error fetching documents:', error);
-        toast({
-          variant: 'destructive',
-          title: 'Error fetching documents',
-          description: error.message,
-        });
-      } else {
-        setDocuments(data);
+        throw new Error(`Failed to fetch documents: ${error.message}`);
       }
+      setDocuments(data);
       setIsLoading(false);
     };
 
