@@ -27,9 +27,14 @@ const placeholderData: UsageData[] = [
   { label: 'June', credits: 214 },
 ];
 
+type TimeUnit = 'day' | 'week' | 'month';
+
+const isTimeUnit = (value: string): value is TimeUnit =>
+  value === 'day' || value === 'week' || value === 'month';
+
 export function AiUsage() {
   const { toast } = useToast();
-  const [timeUnit, setTimeUnit] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
+  const [timeUnit, setTimeUnit] = useState<TimeUnit>('month');
   const [usageData, setUsageData] = useState<UsageData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
@@ -63,8 +68,8 @@ export function AiUsage() {
   }, [timeUnit, toast, isClient]);
 
   const handleTabChange = (value: string) => {
-    if (value === 'daily' || value === 'weekly' || value === 'monthly') {
-      setTimeUnit(value as 'daily' | 'weekly' | 'monthly');
+    if (isTimeUnit(value)) {
+      setTimeUnit(value);
     }
   };
 
@@ -92,26 +97,26 @@ export function AiUsage() {
       </CardHeader>
       <CardContent>
         {isClient ? (
-          <Tabs defaultValue="monthly" className="w-full" onValueChange={handleTabChange}>
+          <Tabs defaultValue="month" className="w-full" onValueChange={handleTabChange}>
             <div className="w-full overflow-x-auto">
               <TabsList>
-                <TabsTrigger value="daily">Daily</TabsTrigger>
-                <TabsTrigger value="weekly">Weekly</TabsTrigger>
-                <TabsTrigger value="monthly">Monthly</TabsTrigger>
+                <TabsTrigger value="day">Daily</TabsTrigger>
+                <TabsTrigger value="week">Weekly</TabsTrigger>
+                <TabsTrigger value="month">Monthly</TabsTrigger>
                 <TabsTrigger value="calendar">Calendar</TabsTrigger>
               </TabsList>
             </div>
-            <TabsContent value="daily">
+            <TabsContent value="day">
               <div className="overflow-x-auto">
                 <ChartToShow />
               </div>
             </TabsContent>
-            <TabsContent value="weekly">
+            <TabsContent value="week">
               <div className="overflow-x-auto">
                 <ChartToShow />
               </div>
             </TabsContent>
-            <TabsContent value="monthly">
+            <TabsContent value="month">
               <div className="overflow-x-auto">
                 <ChartToShow />
               </div>
