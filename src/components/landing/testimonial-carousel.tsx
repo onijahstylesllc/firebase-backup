@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/carousel';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import placeholderImages from '@/lib/placeholder-images.json';
-import { type EmblaCarouselType, type EmblaPluginType } from 'embla-carousel-react';
+import { type EmblaCarouselType, type EmblaPluginType } from 'embla-carousel';
 import { TestimonialCarouselSkeleton } from './testimonial-carousel-skeleton';
 
 const testimonials = [

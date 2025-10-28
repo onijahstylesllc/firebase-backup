@@ -4,6 +4,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { MessageSquare, Sparkles, Users, BrainCircuit, BookCopy, Zap } from 'lucide-react'
 import { useParallax } from 'react-scroll-parallax'
+import type { RefObject } from 'react'
 
 const features = [
   { icon: MessageSquare, title: 'AI-Powered Chat', description: 'Find information, get answers, and understand complex data in seconds.' },
@@ -21,7 +22,7 @@ export const LandingFeatures = () => {
   });
 
   return (
-    <section id="features" ref={featuresParallax.ref} className="w-full py-20 md:py-32">
+    <section id="features" ref={featuresParallax.ref as RefObject<HTMLElement>} className="w-full py-20 md:py-32">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center text-center space-y-4 mb-12">
           <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary font-semibold">Features</div>

@@ -103,7 +103,7 @@ export function useSupabaseCollection<T extends { id: any }> (
       .subscribe((status, err) => {
         if (err) {
             console.error(`[Supabase] Subscription error on ${tableName}:`, err);
-            setError({ message: err.message, details: 'Subscription failed', hint: '', code: 'SUB_ERROR' });
+            setError(new PostgrestError({ message: err.message, details: 'Subscription failed', hint: '', code: 'SUB_ERROR' }));
         }
       });
 
