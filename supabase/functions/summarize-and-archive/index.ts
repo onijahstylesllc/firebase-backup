@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { summarizeMeetingContext } from '../../src/ai/flows/ai-summarize-meeting-context'
 
 const supabase = createClient(
-  process.env.https://pszmwgpjwuprytrahkro.supabase.co,
+  process.env.SUPABASE_URL || 'https://pszmwgpjwuprytrahkro.supabase.co',
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 

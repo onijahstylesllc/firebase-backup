@@ -25,3 +25,7 @@ pnpm dev
 ```
 
 To get started, take a look at src/app/page.tsx.
+
+## Security
+
+For information about dependency security audits and vulnerability management, see [docs/dependency-audit.md](docs/dependency-audit.md).
