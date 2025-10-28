@@ -1,13 +1,18 @@
+
 export type Profile = {
   id: string;
-  name: string;
-  email: string;
-  profile_picture_url: string;
+  username: string;
+  avatar_url: string;
   plan: 'Free' | 'Pro';
   usage: number;
-  ai_preferences: {
-    visualMode: boolean;
-    aiTone: string;
-    aiOutputFormat: string;
-  };
+};
+
+export type Activity = {
+  id: string;
+  created_at: string;
+  type: 'EDIT' | 'COMMENT' | 'SHARE' | 'JOIN';
+  document_id?: string;
+  document_title?: string;
+  user_id?: string;
+  user_name?: string;
 };

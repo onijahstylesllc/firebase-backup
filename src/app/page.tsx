@@ -210,31 +210,32 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
               <div className="flex flex-col justify-center space-y-6 text-center lg:text-left">
-                <h1 className="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl xl:text-7xl/none">
+                <h1 className="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl/none">
                   <TextType 
                     text={["Text typing effect", "for your websites", "Happy coding!"]}
-                    typingSpeed={75}
+                    typingSpeed={150}
+                    deletingSpeed={100}
                     pauseDuration={1500}
                     showCursor={true}
                     cursorCharacter="_"
                     className="text-primary"
                   />
                 </h1>
-                <p className="max-w-[600px] text-muted-foreground md:text-xl mx-auto lg:mx-0">
+                <p className="max-w-[600px] text-muted-foreground text-base sm:text-lg md:text-xl mx-auto lg:mx-0">
                   DocuMind AI is the world's first intelligent document workspace. Go beyond editing and leverage AI to analyze, create, and collaborate.
                 </p>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center lg:justify-start">
+                <div className="flex flex-col gap-4 sm:flex-row justify-center lg:justify-start">
                   <Button size="lg" asChild><Link href="/dashboard">Get Started Free <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
                 </div>
               </div>
-              <div className="flex items-center justify-center">
-                <Link href="/dashboard" className="w-full max-w-xl">
-                  <div className="relative w-full aspect-[4/3] rounded-xl border-2 border-dashed border-muted-foreground/40 hover:border-primary/80 transition-all duration-300 flex flex-col items-center justify-center text-center p-8 group">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20 mb-4">
-                      <UploadCloud className="h-10 w-10 text-primary" />
+              <div className="flex items-center justify-center mt-8 lg:mt-0">
+                <Link href="/dashboard" className="w-full max-w-lg">
+                  <div className="relative w-full aspect-[4/3] rounded-2xl border-2 border-dashed border-muted-foreground/30 hover:border-primary/60 transition-all duration-300 flex flex-col items-center justify-center text-center p-6 group shadow-lg hover:shadow-xl">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 transition-all duration-300 group-hover:scale-105 group-hover:bg-primary/20 mb-6">
+                      <UploadCloud className="h-12 w-12 text-primary" />
                     </div>
-                    <h3 className="font-bold text-xl text-foreground">Upload Document</h3>
-                    <p className="text-muted-foreground mt-2">
+                    <h3 className="font-bold text-2xl text-foreground">Upload Document</h3>
+                    <p className="text-muted-foreground mt-2 max-w-xs">
                       Drag & drop or click to upload your PDF, DOCX, or image file.
                     </p>
                   </div>
@@ -247,17 +248,17 @@ export default function Home() {
         {/* Main Tools Grid */}
         <section className="py-12 md:py-20 bg-muted/40">
           <div className="container px-4 md:px-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
               {mainTools.map((tool, index) => (
                 <Link key={tool.title} href={tool.href} className="group">
-                  <div className="text-center p-4 md:p-6 rounded-xl border bg-card shadow-sm card-hover-effect">
+                  <div className="text-center p-4 rounded-xl border bg-card shadow-sm card-hover-effect h-full flex flex-col justify-center">
                     <div className="flex items-center justify-center mb-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20">
-                        <tool.icon className="h-6 w-6 text-primary" />
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20">
+                        <tool.icon className="h-7 w-7 text-primary" />
                       </div>
                     </div>
-                    <h3 className="font-semibold text-sm md:text-base">{tool.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1 hidden xl:block">{tool.description}</p>
+                    <h3 className="font-semibold text-base">{tool.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1 hidden lg:block">{tool.description}</p>
                   </div>
                 </Link>
               ))}
@@ -292,17 +293,17 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center text-center space-y-4 mb-12">
               <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary font-semibold">Security</div>
-              <h2 className="text-3xl font-bold font-headline sm:text-5xl">Trust & Compliance</h2>
-              <p className="max-w-[900px] text-muted-foreground md:text-xl">Your data is safe with us. We are compliant with the latest security standards.</p>
+              <h2 className="text-3xl font-bold font-headline sm:text-4xl md:text-5xl">Trust & Compliance</h2>
+              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">Your data is safe with us. We are compliant with the latest security standards.</p>
             </div>
             <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {trustBadges.map((badge, i) => (
-                <div key={badge.title} className="text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
-                    <badge.icon className="h-8 w-8 text-primary" />
+                <div key={badge.title} className="text-center flex flex-col items-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
+                    <badge.icon className="h-10 w-10 text-primary" />
                   </div>
-                  <h3 className="text-lg font-bold font-headline">{badge.title}</h3>
-                  <p className="text-sm text-muted-foreground">{badge.description}</p>
+                  <h3 className="text-xl font-bold font-headline">{badge.title}</h3>
+                  <p className="text-sm text-muted-foreground max-w-[200px]">{badge.description}</p>
                 </div>
               ))}
             </div>
@@ -310,19 +311,19 @@ export default function Home() {
         </section>
 
         {/* Features */}
-        <div id="features" className="w-full py-20 md:py-32">
+        <div id="features" className="w-full py-2.5 md:py-5">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center text-center space-y-4 mb-12">
               <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary font-semibold">Features</div>
-              <h2 className="text-3xl font-bold font-headline sm:text-5xl">Your Documents, Upgraded.</h2>
-              <p className="max-w-[900px] text-muted-foreground md:text-xl">Powerful AI tools for seamless workflow.</p>
+              <h2 className="text-3xl font-bold font-headline sm:text-4xl md:text-5xl">Your Documents, Upgraded.</h2>
+              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">Powerful AI tools for seamless workflow.</p>
             </div>
             <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, i) => (
-                <Card key={feature.title} className="text-center group card-hover-effect">
+                <Card key={feature.title} className="text-center group card-hover-effect h-full">
                   <CardHeader className="items-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 group-hover:scale-110 transition-transform">
-                      <feature.icon className="h-6 w-6 text-primary" />
+                    <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10 group-hover:scale-110 transition-transform">
+                      <feature.icon className="h-8 w-8 text-primary" />
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-2">
@@ -340,32 +341,32 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center text-center space-y-4 mb-12">
               <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary font-semibold">Pricing</div>
-              <h2 className="text-3xl font-bold font-headline sm:text-5xl">Find the Perfect Plan</h2>
-              <p className="max-w-[900px] text-muted-foreground md:text-xl">Start free, scale as you grow.</p>
+              <h2 className="text-3xl font-bold font-headline sm:text-4xl md:text-5xl">Find the Perfect Plan</h2>
+              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">Start free, scale as you grow.</p>
             </div>
             <div className="mx-auto grid max-w-md gap-8 sm:max-w-lg lg:max-w-none lg:grid-cols-3">
               {pricingTiers.map((tier) => (
-                <Card key={tier.name} className={`flex flex-col card-hover-effect ${tier.isFeatured ? 'border-primary ring-2 ring-primary shadow-2xl scale-105' : ''}`}>
+                <Card key={tier.name} className={`flex flex-col card-hover-effect h-full ${tier.isFeatured ? 'border-primary ring-2 ring-primary shadow-2xl lg:scale-105' : ''}`}>
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-headline">{tier.name}</CardTitle>
+                    <CardTitle className="text-2xl font-headline">{tier.name}</CardTitle>
                     <CardDescription>{tier.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col justify-between">
                     <div>
                       <div className="mb-6">
-                        <span className="text-4xl font-bold">{tier.price}</span>
+                        <span className="text-5xl font-bold">{tier.price}</span>
                         {tier.priceDetail && <span className="text-sm text-muted-foreground">{tier.priceDetail}</span>}
                       </div>
-                      <ul className="space-y-3">
+                      <ul className="space-y-4">
                         {tier.features.map(feature => (
-                          <li key={feature} className="flex items-center gap-2">
-                            <Check className="h-4 w-4 text-primary" />
+                          <li key={feature} className="flex items-center gap-3">
+                            <Check className="h-5 w-5 text-primary" />
                             <span className="text-muted-foreground">{feature}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
-                    <Button asChild className="mt-8 w-full" variant={tier.isFeatured ? 'default' : 'outline'}>
+                    <Button asChild className="mt-8 w-full" size="lg" variant={tier.isFeatured ? 'default' : 'outline'}>
                       <Link href="/login">{tier.cta}</Link>
                     </Button>
                   </CardContent>
@@ -377,11 +378,11 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="flex w-full shrink-0 flex-col items-center gap-2 border-t bg-muted/40 px-4 py-6 sm:flex-row md:px-6">
-        <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} DocuMind AI. All rights reserved.</p>
+      <footer className="flex w-full shrink-0 flex-col items-center justify-between gap-4 border-t bg-muted/40 px-6 py-6 sm:flex-row">
+        <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} DocuMind AI. All rights reserved.</p>
         <nav className="flex gap-4 sm:ml-auto sm:gap-6">
-          <Link href="#" className="text-xs hover:underline underline-offset-4">Privacy</Link>
-          <Link href="#" className="text-xs hover:underline underline-offset-4">Terms of Service</Link>
+          <Link href="#" className="text-sm hover:underline underline-offset-4">Privacy</Link>
+          <Link href="#" className="text-sm hover:underline underline-offset-4">Terms of Service</Link>
         </nav>
       </footer>
     </div>

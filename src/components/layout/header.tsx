@@ -1,15 +1,8 @@
-
 'use client';
-
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
+import { ThemeToggle } from './theme-toggle';
+import { Logo } from '@/components/logo';
+import { MobileNav } from './mobile-nav';
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,93 +11,114 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Sidebar, SidebarTrigger } from '@/components/ui/sidebar';
-import {
-  Bell,
-  HelpCircle,
-  Home,
-  PanelLeft,
-  Search,
-  Settings,
-  User as UserIcon,
-  LogOut
-} from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import React from 'react';
-import { SidebarNav } from './sidebar-nav';
-import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
-import { ThemeToggle } from './theme-toggle';
+import { Button } from '../ui/button';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { User } from '@/lib/types';
+import { User } from '@supabase/supabase-js';
 
-export function Header({ user }: { user: User }) {
+export function Header() {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+
+      if (user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        if (data) {
+          setProfile(data);
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  };
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('');
+  }
+
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-       <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0 md:hidden"
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <div className="mr-4 hidden md:flex">
+          <Link
+            href="/dashboard"
+            className="mr-6 flex items-center space-x-2"
+          >
+            <Logo />
+          </Link>
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+            <Link
+              href="/edit-pdf"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
             >
-              <PanelLeft className="h-5 w-5" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="flex flex-col">
-            <SidebarNav user={user} isSheet={true} />
-          </SheetContent>
-        </Sheet>
-      <div className="w-full flex-1">
-        <form>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search documents..."
-              className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-            />
+              Edit PDF
+            </Link>
+            <Link
+              href="/documents"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              Documents
+            </Link>
+            <Link
+              href="/templates"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              Templates
+            </Link>
+          </nav>
+        </div>
+        <MobileNav />
+        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none">
+            {/* Quick search */}
+            {/* <CommandMenu /> */}
           </div>
-        </form>
+          <ThemeToggle />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={profile?.profile_picture_url || ''} alt={user?.email || ''} />
+                  <AvatarFallback>{user?.email ? getInitials(user.email) : 'U'}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{profile?.name || user?.email}</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user?.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/profile">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/settings">Settings</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-      <ThemeToggle />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary" size="icon" className="rounded-full">
-             <Avatar className="h-8 w-8">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <span className="sr-only">Toggle user menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/settings">
-              <UserIcon className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/settings">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => supabase.auth.signOut()}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </header>
   );
 }
-
-    

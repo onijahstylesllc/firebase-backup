@@ -93,23 +93,31 @@ export function AiUsage() {
       <CardContent>
         {isClient ? (
           <Tabs defaultValue="monthly" className="w-full" onValueChange={handleTabChange}>
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
-              <TabsTrigger value="daily">Daily</TabsTrigger>
-              <TabsTrigger value="weekly">Weekly</TabsTrigger>
-              <TabsTrigger value="monthly">Monthly</TabsTrigger>
-              <TabsTrigger value="calendar">Calendar</TabsTrigger>
-            </TabsList>
+            <div className="w-full overflow-x-auto">
+              <TabsList>
+                <TabsTrigger value="daily">Daily</TabsTrigger>
+                <TabsTrigger value="weekly">Weekly</TabsTrigger>
+                <TabsTrigger value="monthly">Monthly</TabsTrigger>
+                <TabsTrigger value="calendar">Calendar</TabsTrigger>
+              </TabsList>
+            </div>
             <TabsContent value="daily">
-              <ChartToShow />
+              <div className="overflow-x-auto">
+                <ChartToShow />
+              </div>
             </TabsContent>
             <TabsContent value="weekly">
-              <ChartToShow />
+              <div className="overflow-x-auto">
+                <ChartToShow />
+              </div>
             </TabsContent>
             <TabsContent value="monthly">
-              <ChartToShow />
+              <div className="overflow-x-auto">
+                <ChartToShow />
+              </div>
             </TabsContent>
             <TabsContent value="calendar">
-              <div className="flex justify-center pt-4">
+              <div className="flex justify-center pt-4 overflow-x-auto">
                 <Calendar mode="single" className="rounded-md border" />
               </div>
             </TabsContent>

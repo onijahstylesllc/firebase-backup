@@ -1,4 +1,3 @@
-
 import { Figtree, Bricolage_Grotesque, Press_Start_2P, VT323 } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -57,7 +56,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ParallaxProvider>
-            <SupabaseProvider>{children}</SupabaseProvider>
+            <SupabaseProvider>
+              {children}
+            </SupabaseProvider>
           </ParallaxProvider>
           <Toaster />
         </ThemeProvider>

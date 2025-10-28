@@ -1,35 +1,53 @@
-'use client'
+'use client';
 
-import { Button } from '@/components/ui/button'
-import { Logo } from '@/components/logo'
-import { Menu } from 'lucide-react'
-import Link from 'next/link'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Menu, Bot } from 'lucide-react';
+import Link from 'next/link';
+
+const NAV_LINKS = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/documents', label: 'Ask-the-PDF' },
+  { href: '/rewrite', label: 'Rewrite' },
+  { href: '/translate', label: 'Translate' },
+  { href: '/legal', label: 'Legal Checker' },
+  { href: '/policy', label: 'Policy Compliance' },
+  { href: '/math-solver', label: 'Math Solver' },
+];
 
 export function MobileNav() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden ml-auto">
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle Menu</span>
+        <Button
+          variant="outline"
+          size="icon"
+          className="shrink-0 md:hidden"
+        >
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right">
-        <nav className="grid gap-6 text-lg font-medium mt-8">
-          <Link href="/" className="flex items-center gap-2"><Logo className="h-6 w-6 text-primary" /><span className="font-bold">DocuMind AI</span></Link>
-          <Link href="#features" className="text-muted-foreground hover:text-foreground">Features</Link>
-          <Link href="#solutions" className="text-muted-foreground hover:text-foreground">Solutions</Link>
-          <Link href="#testimonials" className="text-muted-foreground hover:text-foreground">Testimonials</Link>
-          <Link href="#pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link>
-          <div className="border-t pt-6 flex flex-col gap-4">
-            <ThemeToggle />
-            <Button variant="ghost" asChild><Link href="/login">Sign In</Link></Button>
-            <Button asChild><Link href="/dashboard">Get Started</Link></Button>
-          </div>
+      <SheetContent side="left" className="flex flex-col">
+        <nav className="grid gap-2 text-lg font-medium">
+          <Link
+            href="#"
+            className="flex items-center gap-2 text-lg font-semibold"
+          >
+            <Bot className="h-6 w-6" />
+            <span className="sr-only">AI Toolbox</span>
+          </Link>
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

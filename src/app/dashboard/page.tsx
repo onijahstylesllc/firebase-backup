@@ -24,153 +24,178 @@ import {
   Gavel,
   ShieldCheck,
   Calculator,
+  FileEdit,
+  ScanText,
+  Sparkles as SparklesIcon,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { AiUsage } from '@/components/dashboard/ai-usage';
-import { type Profile } from '@/lib/types';
-
-const recentActivity = [
-  {
-    id: 'doc-1',
-    fileName: 'Project Proposal Q3.pdf',
-    action: 'edited',
-    timestamp: new Date(Date.now() - 1000 * 60 * 5),
-  },
-  {
-    id: 'doc-2',
-    fileName: 'Marketing Campaign Brief.docx',
-    action: 'commented on',
-    timestamp: new Date(Date.now() - 1000 * 60 * 22),
-  },
-  {
-    id: 'doc-3',
-    fileName: 'Financial-Report-2024.xlsx',
-    action: 'shared',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-  },
-  {
-    id: 'user-1',
-    userName: 'Alice Johnson',
-    action: 'joined your team',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8),
-  },
-];
+import { type Profile, type Activity } from '@/lib/types';
 
 const quickAccessTools = [
+  { icon: FileEdit, label: 'Edit PDF', href: '/documents' },
+  { icon: ScanText, label: 'Scan Docs', href: '/analyze' },
+  { icon: SparklesIcon, label: 'Summarize', href: '/analyze' },
   { icon: MessageSquare, label: 'Ask-the-PDF', href: '/documents' },
   { icon: Repeat, label: 'Rewrite', href: '/rewrite' },
   { icon: Languages, label: 'Translate', href: '/translate' },
   { icon: Gavel, label: 'Legal Checker', href: '/legal' },
-  { icon: ShieldCheck, label: 'Policy Compliance', href: '/policy' },
+  { icon: ShieldCheck, label: 'Policy Check', href: '/policy' },
   { icon: Calculator, label: 'Math Solver', href: '/math-solver' },
 ];
 
+const ActivityIcon = ({ type }: { type: Activity['type'] }) => {
+  switch (type) {
+    case 'EDIT':
+      return <FileEdit className="h-5 w-5" />;
+    case 'COMMENT':
+      return <MessageSquare className="h-5 w-5" />;
+    case 'SHARE':
+      return <FileUp className="h-5 w-5" />;
+    case 'JOIN':
+      return <Users className="h-5 w-5" />;
+    default:
+      return <Clock className="h-5 w-5" />;
+  }
+};
+
+const getActivityDescription = (activity: Activity) => {
+  switch (activity.type) {
+    case 'EDIT':
+      return `edited ${activity.document_title}`;
+    case 'COMMENT':
+      return `commented on ${activity.document_title}`;
+    case 'SHARE':
+      return `shared ${activity.document_title}`;
+    case 'JOIN':
+      return `joined your team`;
+    default:
+      return '';
+  }
+};
+
 export default function DashboardPage() {
   const { data: userProfile, isLoading: isProfileLoading } = useSupabaseCollection<Profile>('profiles');
+  const { data: recentActivity, isLoading: isActivityLoading } = useSupabaseCollection<Activity>('activity', {
+    orderBy: 'created_at',
+    ascending: false,
+    limit: 5,
+  });
+
   const usage = userProfile?.[0]?.usage || 0;
   const plan = userProfile?.[0]?.plan || 'Free';
   const usagePercentage = (usage / (plan === 'Pro' ? 200 : 20)) * 100;
 
   return (
-    <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-      <div className="xl:col-span-2">
-        <div className="grid gap-4 md:grid-cols-2 lg:gap-8">
-          <Card className="animate-fade-in">
-            <CardHeader>
-              <CardTitle className="font-headline">Quick Access</CardTitle>
-              <CardDescription>
-                Your most-used AI tools, just a click away.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {quickAccessTools.map((tool) => (
-                <Button
-                  key={tool.label}
-                  variant="outline"
-                  className="h-20 flex flex-col items-center justify-center gap-1 text-center"
-                  asChild
-                >
-                  <Link href={tool.href}>
-                    <tool.icon className="h-6 w-6 text-primary" />
-                    <span className="text-xs text-muted-foreground">
-                      {tool.label}
-                    </span>
-                  </Link>
-                </Button>
-              ))}
-            </CardContent>
-          </Card>
-          <Card className="animate-fade-in-delay-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium font-headline">
-                My Plan
-              </CardTitle>
-              <BarChartBig className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {isProfileLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-8 w-1/2" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-              ) : (
-                <>
-                  <div className="text-2xl font-bold">{plan} Plan</div>
-                  <p className="text-xs text-muted-foreground">
-                    You've used {usage} of your 20 document analyses this
-                    month.
-                  </p>
-                  <Progress value={usagePercentage} className="mt-2" />
-                </>
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button size="sm" className="w-full">
-                Upgrade Plan
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 p-4 md:p-6">
+      
+      {/* -- Quick Access -- */}
+      <Card className="lg:col-span-2 animate-fade-in">
+        <CardHeader>
+          <CardTitle className="font-headline">Quick Access</CardTitle>
+          <CardDescription>
+            Your most-used AI tools, just a click away.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-3 gap-4">
+          {quickAccessTools.map((tool) => (
+            <Button
+              key={tool.label}
+              variant="outline"
+              className="h-24 flex flex-col items-center justify-center gap-2 text-center p-2"
+              asChild
+            >
+              <Link href={tool.href}>
+                <tool.icon className="h-7 w-7 text-primary" />
+                <span className="text-xs font-semibold text-muted-foreground">
+                  {tool.label}
+                </span>
+              </Link>
+            </Button>
+          ))}
+        </CardContent>
+      </Card>
 
-        <div className="mt-4 lg:mt-8 animate-fade-in-delay-2">
-          <AiUsage />
-        </div>
-      </div>
-
-      <Card className="animate-fade-in-delay-3 xl:col-span-1">
+      {/* -- Recent Activity -- */}
+      <Card className="lg:col-span-1 lg:row-span-2 animate-fade-in-delay-1">
         <CardHeader>
           <CardTitle className="font-headline">Recent Activity</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-6">
-          {recentActivity.map((activity, i) => (
-            <div
-              key={activity.id}
-              className="flex items-center gap-3"
-              style={{ animationDelay: `${i * 100}ms` }}
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                {activity.fileName ? (
-                  <FileUp className="h-4 w-4" />
-                ) : (
-                  <Clock className="h-4 w-4" />
-                )}
+          {isActivityLoading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-3 w-[150px]" />
+                </div>
               </div>
-              <div className="text-sm">
-                <p>
-                  <span className="font-medium">
-                    {activity.fileName || activity.userName}
-                  </span>{' '}
-                  {activity.action}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(activity.timestamp, { addSuffix: true })}
-                </p>
+            ))
+          ) : (
+            recentActivity?.map((activity) => (
+              <div key={activity.id} className="flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary flex-shrink-0">
+                  <ActivityIcon type={activity.type} />
+                </div>
+                <div className="text-sm truncate">
+                  <p className="truncate">
+                    <span className="font-medium">
+                      {activity.user_name || activity.document_title}
+                    </span> {' '}
+                    {getActivityDescription(activity)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </CardContent>
       </Card>
+
+      {/* -- AI Usage -- */}
+      <div className="lg:col-span-2 animate-fade-in-delay-2">
+        <AiUsage />
+      </div>
+
+      {/* -- My Plan -- */}
+      <div className="lg:col-span-3 animate-fade-in-delay-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium font-headline">
+              My Plan
+            </CardTitle>
+            <BarChartBig className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {isProfileLoading ? (
+              <div className="space-y-2 py-2">
+                <Skeleton className="h-7 w-1/3" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2 mt-2" />
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{plan} Plan</div>
+                <p className="text-xs text-muted-foreground">
+                  You've used {usage} of your {plan === 'Pro' ? '200' : '20'} document analyses this
+                  month.
+                </p>
+                <Progress value={usagePercentage} className="mt-2" />
+              </>
+            )}
+          </CardContent>
+          <CardFooter>
+            <Button size="sm" className="w-full">
+              Upgrade Plan
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+
     </div>
   );
 }

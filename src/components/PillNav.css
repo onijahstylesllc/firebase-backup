@@ -1,19 +1,17 @@
 
 .pill-nav-container {
   position: absolute;
-  top: 1em;
-  z-index: 99;
+  top: 1rem;
+  z-index: 50;
   width: 100%;
   left: 0;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
 }
 
-
 .pill-nav {
-  --nav-h: 42px;
-  --logo: 36px;
-  --pill-pad-x: 18px;
-  --pill-gap: 3px;
+  --nav-h: 48px;
+  --pill-pad-x: 24px;
+  --pill-gap: 4px;
   width: fit-content;
   display: flex;
   align-items: center;
@@ -36,17 +34,18 @@
   height: var(--nav-h);
   border-radius: 50%;
   background: var(--base, #000);
-  padding: 8px;
+  padding: 10px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .pill-logo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -56,7 +55,7 @@
   align-items: stretch;
   gap: var(--pill-gap);
   margin: 0;
-  padding: 3px;
+  padding: 4px;
   height: 100%;
 }
 
@@ -77,14 +76,15 @@
   border-radius: 9999px;
   box-sizing: border-box;
   font-weight: 600;
-  font-size: 16px;
-  line-height: 0;
+  font-size: 14px;
+  line-height: 1;
   text-transform: uppercase;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 .pill .hover-circle {
@@ -127,13 +127,13 @@
 .pill.is-active::after {
   content: '';
   position: absolute;
-  bottom: -6px;
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   background: var(--base, #000);
-  border-radius: 50px;
+  border-radius: 50%;
   z-index: 4;
 }
 
@@ -159,25 +159,80 @@
   cursor: pointer;
   padding: 0;
   position: relative;
+  z-index: 1000;
 }
 
-@media (max-width: 768px) {
+.hamburger-line {
+  width: 18px;
+  height: 2px;
+  background: var(--pill-bg, #fff);
+  border-radius: 1px;
+  transition: all 0.2s ease-in-out;
+  transform-origin: center;
+}
+
+.mobile-menu-popover {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background: var(--base, #f0f0f0);
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  opacity: 0;
+  transform-origin: top center;
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.mobile-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-menu-popover .mobile-menu-link {
+  display: block;
+  padding: 14px 20px;
+  color: var(--pill-text, #fff);
+  background-color: var(--pill-bg, #fff);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.mobile-menu-popover .mobile-menu-link:hover {
+  cursor: pointer;
+  background-color: var(--hover-bg);
+  color: var(--hover-text, #fff);
+  transform: scale(1.02);
+}
+
+
+@media (max-width: 992px) {
   .desktop-only {
     display: none;
   }
 
   .mobile-only {
-    display: block;
+    display: flex;
   }
 
   .pill-nav-container {
-    padding: 0;
+    padding: 0 1rem;
   }
 
   .pill-nav {
     width: 100%;
     justify-content: space-between;
-    padding: 0 1rem;
+    padding: 0;
   }
 
   .pill-nav-items {
@@ -187,55 +242,4 @@
   .mobile-menu-button {
     display: flex;
   }
-}
-
-
-.hamburger-line {
-  width: 16px;
-  height: 2px;
-  background: var(--pill-bg, #fff);
-  border-radius: 1px;
-  transition: all 0.01s ease;
-  transform-origin: center;
-}
-
-.mobile-menu-popover {
-  position: absolute;
-  top: 3em;
-  left: 1rem;
-  right: 1rem;
-  background: var(--base, #f0f0f0);
-  border-radius: 27px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  z-index: 998;
-  opacity: 0;
-  transform-origin: top center;
-  visibility: hidden;
-}
-
-.mobile-menu-list {
-  list-style: none;
-  margin: 0;
-  padding: 3px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.mobile-menu-popover .mobile-menu-link {
-  display: block;
-  padding: 12px 16px;
-  color: var(--pill-text, #fff);
-  background-color: var(--pill-bg, #fff);
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
-  border-radius: 50px;
-  transition: all 0.2s ease;
-}
-
-.mobile-menu-popover .mobile-menu-link:hover {
-  cursor: pointer;
-  background-color: var(--hover-bg);
-  color: var(--hover-text, #fff);
 }

@@ -1,11 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState, createElement, useMemo, useCallback, FC, ElementType } from 'react';
+import { ElementType, useEffect, useRef, useState, createElement, useMemo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import './TextType.css';
 
-// Define the props type explicitly
 interface TextTypeProps {
+  className?: string;
+  showCursor?: boolean;
+  hideCursorWhileTyping?: boolean;
+  cursorCharacter?: string | React.ReactNode;
+  cursorBlinkDuration?: number;
+  cursorClassName?: string;
   text: string | string[];
   as?: ElementType;
   typingSpeed?: number;
@@ -13,20 +18,14 @@ interface TextTypeProps {
   pauseDuration?: number;
   deletingSpeed?: number;
   loop?: boolean;
-  className?: string;
-  showCursor?: boolean;
-  hideCursorWhileTyping?: boolean;
-  cursorCharacter?: string;
-  cursorClassName?: string;
-  cursorBlinkDuration?: number;
-  variableSpeed?: boolean | { min: number; max: number };
+  textColors?: string[];
+  variableSpeed?: { min: number; max: number };
   onSentenceComplete?: (sentence: string, index: number) => void;
   startOnVisible?: boolean;
   reverseMode?: boolean;
-  [key: string]: any; // For ...props
 }
 
-const TextType: FC<TextTypeProps> = ({
+const TextType = ({
   text,
   as: Component = 'div',
   typingSpeed = 50,
@@ -40,29 +39,33 @@ const TextType: FC<TextTypeProps> = ({
   cursorCharacter = '|',
   cursorClassName = '',
   cursorBlinkDuration = 0.5,
-  variableSpeed = false,
-  onSentenceComplete = () => {},
+  textColors = [],
+  variableSpeed,
+  onSentenceComplete,
   startOnVisible = false,
   reverseMode = false,
   ...props
-}) => {
+}: TextTypeProps & React.HTMLAttributes<HTMLElement>) => {
   const [displayedText, setDisplayedText] = useState('');
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(!startOnVisible);
-  const cursorRef = useRef(null);
-  const containerRef = useRef(null);
+  const cursorRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
 
   const textArray = useMemo(() => (Array.isArray(text) ? text : [text]), [text]);
 
   const getRandomSpeed = useCallback(() => {
-    if (typeof variableSpeed === 'object' && variableSpeed !== null) {
-      const { min, max } = variableSpeed;
-      return Math.random() * (max - min) + min;
-    }
-    return typingSpeed;
+    if (!variableSpeed) return typingSpeed;
+    const { min, max } = variableSpeed;
+    return Math.random() * (max - min) + min;
   }, [variableSpeed, typingSpeed]);
+
+  const getCurrentTextColor = () => {
+    if (textColors.length === 0) return;
+    return textColors[currentTextIndex % textColors.length];
+  };
 
   useEffect(() => {
     if (!startOnVisible || !containerRef.current) return;
@@ -99,6 +102,7 @@ const TextType: FC<TextTypeProps> = ({
     if (!isVisible) return;
 
     let timeout: NodeJS.Timeout;
+
     const currentText = textArray[currentTextIndex];
     const processedText = reverseMode ? currentText.split('').reverse().join('') : currentText;
 
@@ -160,29 +164,30 @@ const TextType: FC<TextTypeProps> = ({
     isVisible,
     reverseMode,
     variableSpeed,
-    onSentenceComplete,
-    getRandomSpeed,
+    onSentenceComplete
   ]);
+
+  const shouldHideCursor =
+    hideCursorWhileTyping && (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
 
   return createElement(
     Component,
     {
-      ...props,
       ref: containerRef,
-      className: `text-container ${className}`
+      className: `text-type ${className}`,
+      ...props
     },
-    <>
+    <span className="text-type__content" style={{ color: getCurrentTextColor() || 'inherit' }}>
       {displayedText}
-      {showCursor && (
-        <span
-          ref={cursorRef}
-          className={`cursor ${hideCursorWhileTyping && (currentCharIndex > 0 && currentCharIndex < textArray[currentTextIndex].length) ? 'hidden' : ''} ${cursorClassName}`}
-          style={{ marginLeft: '1px' }}
-        >
-          {cursorCharacter}
-        </span>
-      )}
-    </>
+    </span>,
+    showCursor && (
+      <span
+        ref={cursorRef}
+        className={`text-type__cursor ${cursorClassName} ${shouldHideCursor ? 'text-type__cursor--hidden' : ''}`}
+      >
+        {cursorCharacter}
+      </span>
+    )
   );
 };
 

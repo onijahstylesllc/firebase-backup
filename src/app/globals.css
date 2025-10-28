@@ -3,10 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: var(--font-body), sans-serif;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -69,6 +65,9 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
   }
   html {
     scroll-behavior: smooth;
