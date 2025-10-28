@@ -3,7 +3,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabaseClient';
+import { isSupabaseConfigured, supabase } from '@/lib/supabaseClient';
 import { usePathname, useRouter } from 'next/navigation';
 
 
@@ -21,9 +21,17 @@ export default function SupabaseProvider({ children }: { children: React.ReactNo
     const isAppRoute = pathname.startsWith('/dashboard');
 
     useEffect(() => {
+        if (!isSupabaseConfigured) {
+            return;
+        }
+
         const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setSession(session);
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                setSession(session);
+            } catch (error) {
+                console.warn('Unable to fetch Supabase session', error);
+            }
         };
 
         getSession();
@@ -38,16 +46,19 @@ export default function SupabaseProvider({ children }: { children: React.ReactNo
         return () => {
             authListener.subscription.unsubscribe();
         };
-    }, [router]);
+    }, [router, isSupabaseConfigured]);
 
     useEffect(() => {
+        if (!isSupabaseConfigured) {
+            return;
+        }
         if (!session && isAppRoute) {
             router.push('/login');
         }
         if (session && !isAppRoute) {
             router.push('/dashboard');
         }
-    }, [session, isAppRoute, pathname, router]);
+    }, [session, isAppRoute, pathname, router, isSupabaseConfigured]);
     
     return (
         <Context.Provider value={{ supabase, session }}>
