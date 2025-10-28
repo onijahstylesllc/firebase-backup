@@ -1,5 +1,6 @@
 import { Figtree, Bricolage_Grotesque, Press_Start_2P, VT323 } from 'next/font/google';
 import './globals.css';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -62,6 +63,7 @@ export default function RootLayout({
           </ParallaxProvider>
           <Toaster />
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
