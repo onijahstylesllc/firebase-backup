@@ -13,7 +13,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { FileEdit, Loader2, Sparkles, Wand2 } from 'lucide-react';
-import { rewriteTextWithAI } from '@/ai/ai-rewrite-text';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -42,10 +41,30 @@ export default function RewritePage() {
     setRewrittenText('');
 
     try {
-      const result = await rewriteTextWithAI({
-        text: originalText,
-        style: style.trim() || undefined,
+      const response = await fetch('/api/ai/rewrite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: originalText,
+          style: style.trim() || undefined,
+        }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        
+        if (response.status === 429) {
+          throw new Error('Rate limit exceeded. Please wait a moment before trying again.');
+        } else if (response.status === 401) {
+          throw new Error('You must be logged in to use AI rewrite.');
+        } else {
+          throw new Error(errorData.message || 'Failed to rewrite text.');
+        }
+      }
+
+      const result = await response.json();
       setRewrittenText(result.rewrittenText);
     } catch (e: any) {
       console.error('Rewrite Text Error:', e);

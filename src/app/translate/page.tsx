@@ -13,7 +13,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Languages, Loader2, Sparkles } from 'lucide-react';
-import { translateTextWithAI } from '@/ai/ai-translate-text';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
@@ -52,10 +51,30 @@ export default function TranslatePage() {
         setTranslatedText('');
 
         try {
-            const result = await translateTextWithAI({
-                text: originalText,
-                targetLanguage: languages.find(l => l.code === targetLanguage)?.name || 'Spanish',
+            const response = await fetch('/api/ai/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: originalText,
+                    targetLanguage: languages.find(l => l.code === targetLanguage)?.name || 'Spanish',
+                }),
             });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                
+                if (response.status === 429) {
+                    throw new Error('Rate limit exceeded. Please wait a moment before trying again.');
+                } else if (response.status === 401) {
+                    throw new Error('You must be logged in to use AI translation.');
+                } else {
+                    throw new Error(errorData.message || 'Failed to translate text.');
+                }
+            }
+
+            const result = await response.json();
             setTranslatedText(result.translatedText);
         } catch (e: any) {
             console.error('Translate Text Error:', e);
