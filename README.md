@@ -12,19 +12,14 @@ This project is a Next.js 15 App Router application built with React 18, Tailwin
 
 2. **Configure environment variables**
 
-   Copy `.env.example` to `.env.local` (the `.env*` files are already gitignored) and supply your Supabase project credentials:
+   Copy `.env.example` to `.env.local` (the `.env*` files are already gitignored). The example file ships with the shared Supabase development project credentials so you can get started immediately:
 
    ```
-   NEXT_PUBLIC_SUPABASE_URL=<your-supabase-project-url>
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+   NEXT_PUBLIC_SUPABASE_URL=https://pszmwgpjwuprytrahkro.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBzem13Z3Bqd3Vwcnl0cmFoa3JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4OTM2MDYsImV4cCI6MjA3NjQ2OTYwNn0.56OQIcwoz7UwQMpaEuRfP4k7qEE1ZobPmn-aTbONLwI
    ```
 
-   If you only need a local preview without Supabase access, you can leave the provided placeholder values:
-
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=public-anon-key
-   ```
+   If you need to point at a different Supabase project, update the values above in your `.env.local`.
 
 3. **Run the development server**
 
