@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // Get user identifier for rate limiting
     const userId = session.user.id;
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const identifier = userId || ip;
 
     // Apply rate limiting
