@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { chatRateLimiter } from '@/lib/security/rate-limit';
 import { ai } from '@/ai/genkit';
+import { createRouteHandlerClient } from '@/lib/supabaseServer';
 
 // Import the schema from the chat flow
 const ChatWithDocumentInputSchema = z.object({
@@ -79,7 +78,7 @@ const chatWithDocumentFlow = ai.defineFlow(
 export async function POST(request: NextRequest) {
   try {
     // Create Supabase client for server-side auth
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createRouteHandlerClient();
 
     // Verify authentication
     const {
