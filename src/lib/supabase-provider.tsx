@@ -2,13 +2,14 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
 import { usePathname, useRouter } from 'next/navigation';
+import type { Database } from '@/types/supabase';
 
 
 type SupabaseContext = {
-    supabase: SupabaseClient;
+    supabase: SupabaseClient<Database>;
     session: any;
 };
 

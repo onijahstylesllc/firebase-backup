@@ -1,12 +1,13 @@
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase';
 
 interface UsageData {
   label: string;
   credits: number;
 }
 
-async function getUsageData(supabase: SupabaseClient, userId: string, timeUnit: 'day' | 'week' | 'month'): Promise<UsageData[]> {
+async function getUsageData(supabase: SupabaseClient<Database>, userId: string, timeUnit: 'day' | 'week' | 'month'): Promise<UsageData[]> {
   const now = new Date();
   const usageData: { [key: string]: number } = {};
 

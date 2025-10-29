@@ -1,21 +1,12 @@
 import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js'
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/lib/supabaseEnv'
+import type { Database } from '@/types/supabase'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+let browserClient: SupabaseClient<Database> | null = null
 
-if (!supabaseUrl) {
-  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable. Please update your environment configuration.')
-}
-
-if (!supabaseAnonKey) {
-  throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable. Please update your environment configuration.')
-}
-
-let browserClient: SupabaseClient | null = null
-
-export const createClient = (): SupabaseClient => {
+export const createClient = (): SupabaseClient<Database> => {
   if (!browserClient) {
-    browserClient = createSupabaseClient(supabaseUrl, supabaseAnonKey)
+    browserClient = createSupabaseClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY)
   }
 
   return browserClient
