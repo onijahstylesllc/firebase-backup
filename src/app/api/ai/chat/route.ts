@@ -8,7 +8,7 @@ import { ai } from '@/ai/genkit';
 // Import the schema from the chat flow
 const ChatWithDocumentInputSchema = z.object({
   documentImage: z.string().optional().describe("A data URI of the document page image. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
-  message: z.string().describe('The user's message.'),
+  message: z.string().describe("The user's message."),
   history: z.array(z.object({
     role: z.enum(['user', 'model']),
     content: z.array(z.object({ text: z.string() })),
@@ -23,7 +23,7 @@ const ChatWithDocumentInputSchema = z.object({
 const ChatWithDocumentOutputSchema = z.object({
   response: z
     .string()
-    .describe('The AI's response to the user's message.'),
+    .describe("The AI's response to the user's message."),
 });
 
 // Define the prompt (same as in the flow)
