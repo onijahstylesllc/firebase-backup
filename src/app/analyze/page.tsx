@@ -12,8 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { FileUp, Loader2, Sparkles, UploadCloud, Image as ImageIcon, Info, BrainCircuit, Activity, CheckCircle, ListTree, Smile, Frown, Meh } from 'lucide-react';
+import { FileUp, Loader2, Sparkles, UploadCloud, BrainCircuit, Activity, CheckCircle, ListTree, Smile, Frown, Meh } from 'lucide-react';
 import { analyzeDocument, AnalyzeDocumentOutput } from '@/ai/flows/ai-analyze-document';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -229,7 +228,7 @@ export default function AnalyzeDocumentPage() {
           <CardHeader>
             <CardTitle>AI Analysis</CardTitle>
             <CardDescription>
-              The AI's structured analysis will appear below.
+              The AI&apos;s structured analysis will appear below.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -3,12 +3,10 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Logo } from '@/components/logo'
 import {
   ArrowRight,
   Check,
   Zap,
-  LineChart,
   BrainCircuit,
   MessageSquare,
   BookCopy,
@@ -19,7 +17,6 @@ import {
   User,
   Star,
   Gavel,
-  Calculator,
   Edit,
   Signature,
   FileCog,
@@ -41,18 +38,17 @@ import {
   UploadCloud,
 } from 'lucide-react'
 import Link from 'next/link'
-import React, { Suspense, useRef, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useTheme } from 'next-themes'
 import { TestimonialCarouselSkeleton } from '@/components/landing/testimonial-carousel-skeleton'
-import { useParallax } from 'react-scroll-parallax'
 import TextType from '@/components/TextType';
 import CurvedLoop from '@/components/CurvedLoop';
 import { FaStripe, FaLinkedin, FaAmazon, FaGoogle, FaMicrosoft, FaApple, FaFacebook, FaSpotify, FaSalesforce, FaUber, FaAirbnb, FaPaypal, FaShopify, FaSlack } from 'react-icons/fa';
 import PillNav from '@/components/PillNav';
 import ThemeToggle from '@/components/ThemeToggle';
 
-const TestimonialCarousel = dynamic(
+const _TestimonialCarousel = dynamic(
   () => import('@/components/landing/testimonial-carousel').then(mod => mod.TestimonialCarousel),
   {
     ssr: false,
@@ -60,7 +56,7 @@ const TestimonialCarousel = dynamic(
   }
 )
 
-const MobileNav = dynamic(
+const _MobileNav = dynamic(
     () => import('@/components/layout/mobile-nav').then(mod => mod.MobileNav),
     { ssr: false }
 )
@@ -102,7 +98,7 @@ const trustBadges = [
   { icon: Server, title: '99.9% Uptime', description: 'Reliable access to your documents when you need them.' },
 ]
 
-const useCases = [
+const _useCases = [
   { icon: Scale, title: 'Legal Professionals', benefits: ['Analyze contracts for risks', 'Summarize case law quickly', 'Automate compliance checks', 'Find clauses instantly'] },
   { icon: Target, title: 'Marketing Teams', benefits: ['Ensure brand consistency', 'Generate campaign ideas', 'Summarize market research', 'Rewrite copy instantly'] },
   { icon: GraduationCap, title: 'Students & Academics', benefits: ['Accelerate literature reviews', 'AI essay assistance', 'Check formatting guidelines', 'Create study guides'] },
@@ -111,7 +107,7 @@ const useCases = [
   { icon: Briefcase, title: 'Business', benefits: ['Create proposals', 'Generate meeting summaries', 'Analyze financial reports', 'Streamline onboarding'] },
 ]
 
-const solutions = {
+const _solutions = {
   industries: [
     { icon: Landmark, title: 'Financial Services', description: 'Enhance compliance and accelerate onboarding.' },
     { icon: FileCheck, title: 'Insurance', description: 'Streamline claims processing.' },
@@ -222,7 +218,7 @@ export default function Home() {
                   />
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground text-base sm:text-lg md:text-xl mx-auto lg:mx-0">
-                  DocuMind AI is the world's first intelligent document workspace. Go beyond editing and leverage AI to analyze, create, and collaborate.
+                  DocuMind AI is the world&apos;s first intelligent document workspace. Go beyond editing and leverage AI to analyze, create, and collaborate.
                 </p>
                 <div className="flex flex-col gap-4 sm:flex-row justify-center lg:justify-start">
                   <Button size="lg" asChild><Link href="/dashboard">Get Started Free <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
@@ -249,7 +245,7 @@ export default function Home() {
         <section className="py-12 md:py-20 bg-muted/40">
           <div className="container px-4 md:px-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
-              {mainTools.map((tool, index) => (
+              {mainTools.map((tool) => (
                 <Link key={tool.title} href={tool.href} className="group">
                   <div className="text-center p-4 rounded-xl border bg-card shadow-sm card-hover-effect h-full flex flex-col justify-center">
                     <div className="flex items-center justify-center mb-4">
@@ -297,7 +293,7 @@ export default function Home() {
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">Your data is safe with us. We are compliant with the latest security standards.</p>
             </div>
             <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {trustBadges.map((badge, i) => (
+              {trustBadges.map((badge) => (
                 <div key={badge.title} className="text-center flex flex-col items-center">
                   <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
                     <badge.icon className="h-10 w-10 text-primary" />
@@ -319,7 +315,7 @@ export default function Home() {
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">Powerful AI tools for seamless workflow.</p>
             </div>
             <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature, i) => (
+              {features.map((feature) => (
                 <Card key={feature.title} className="text-center group card-hover-effect h-full">
                   <CardHeader className="items-center">
                     <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10 group-hover:scale-110 transition-transform">
