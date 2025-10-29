@@ -47,8 +47,7 @@ const rewriteTextWithAIFlow = ai.defineFlow(
 export async function POST(request: NextRequest) {
   try {
     // Create Supabase client for server-side auth
-    const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = createRouteHandlerClient({ cookies });
 
     // Verify authentication
     const {
