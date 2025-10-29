@@ -34,7 +34,6 @@ import {
 import { Logo } from '../logo';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { User } from '@/lib/types';
 
 const mainNav = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -65,7 +64,7 @@ const managementNav = [
     { href: '/settings', icon: Settings, label: 'Settings' },
 ]
 
-export function SidebarNav({ user, isSheet = false }: { user: User, isSheet?: boolean }) {
+export function SidebarNav({ user, isSheet = false }: { user: any, isSheet?: boolean }) {
   const pathname = usePathname();
 
   const isActive = (path: string) => {

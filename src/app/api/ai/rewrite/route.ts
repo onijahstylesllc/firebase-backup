@@ -7,15 +7,15 @@ import { ai } from '@/ai/genkit';
 
 // Import the schema from the rewrite flow
 const RewriteTextWithAIInputSchema = z.object({
-  text: z.string().describe('The text to be rewritten.'),
+  text: z.string().describe("The text to be rewritten."),
   style: z
     .string()
     .optional()
-    .describe('The desired style or tone for the rewritten text.'),
+    .describe("The desired style or tone for the rewritten text."),
 });
 
 const RewriteTextWithAIOutputSchema = z.object({
-  rewrittenText: z.string().describe('The text rewritten by the AI.'),
+  rewrittenText: z.string().describe("The text rewritten by the AI."),
 });
 
 // Define the prompt (same as in the flow)
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   try {
     // Create Supabase client for server-side auth
     const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = createRouteHandlerClient({ cookies: () => Promise.resolve(cookieStore) });
 
     // Verify authentication
     const {
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     // Get user identifier for rate limiting
     const userId = session.user.id;
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const identifier = userId || ip;
 
     // Apply rate limiting

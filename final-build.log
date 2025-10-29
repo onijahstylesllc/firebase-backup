@@ -1,0 +1,102 @@
+
+> nextn@0.1.0 build /home/engine/project
+> NODE_ENV=production next build && pnpm run verify:bundle
+
+⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+   ▲ Next.js 15.5.6
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ⚠ Compiled with warnings in 29.9s
+
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+./node_modules/.pnpm/@opentelemetry+sdk-node@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/sdk-node/build/src/sdk.js
+./node_modules/.pnpm/@opentelemetry+sdk-node@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/sdk-node/build/src/index.js
+./node_modules/.pnpm/@genkit-ai+core@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0__ayuwo7uovu3jia6oyvlu26duty/node_modules/@genkit-ai/core/lib/tracing/node-telemetry-provider.js
+./node_modules/.pnpm/@genkit-ai+core@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0__ayuwo7uovu3jia6oyvlu26duty/node_modules/@genkit-ai/core/lib/node.js
+./node_modules/.pnpm/genkit@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0/node_modules/genkit/lib/common.js
+./node_modules/.pnpm/genkit@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0/node_modules/genkit/lib/index.mjs
+./src/ai/genkit.ts
+./src/app/api/ai/chat/route.ts
+
+./node_modules/.pnpm/express@4.21.2/node_modules/express/lib/view.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/.pnpm/express@4.21.2/node_modules/express/lib/view.js
+./node_modules/.pnpm/express@4.21.2/node_modules/express/lib/application.js
+./node_modules/.pnpm/express@4.21.2/node_modules/express/lib/express.js
+./node_modules/.pnpm/express@4.21.2/node_modules/express/index.js
+./node_modules/.pnpm/@genkit-ai+core@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0__ayuwo7uovu3jia6oyvlu26duty/node_modules/@genkit-ai/core/lib/reflection.js
+./node_modules/.pnpm/@genkit-ai+core@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0__ayuwo7uovu3jia6oyvlu26duty/node_modules/@genkit-ai/core/lib/index.js
+./node_modules/.pnpm/genkit@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0/node_modules/genkit/lib/common.js
+./node_modules/.pnpm/genkit@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0/node_modules/genkit/lib/index.mjs
+./src/ai/genkit.ts
+./src/app/api/ai/chat/route.ts
+
+./node_modules/.pnpm/require-in-the-middle@7.5.2/node_modules/require-in-the-middle/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/.pnpm/require-in-the-middle@7.5.2/node_modules/require-in-the-middle/index.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+./node_modules/.pnpm/@opentelemetry+sdk-node@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/sdk-node/build/src/sdk.js
+./node_modules/.pnpm/@opentelemetry+sdk-node@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/sdk-node/build/src/index.js
+./node_modules/.pnpm/@genkit-ai+core@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0__ayuwo7uovu3jia6oyvlu26duty/node_modules/@genkit-ai/core/lib/tracing/node-telemetry-provider.js
+./node_modules/.pnpm/@genkit-ai+core@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0__ayuwo7uovu3jia6oyvlu26duty/node_modules/@genkit-ai/core/lib/node.js
+./node_modules/.pnpm/genkit@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0/node_modules/genkit/lib/common.js
+./node_modules/.pnpm/genkit@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0/node_modules/genkit/lib/index.mjs
+./src/ai/flows/ai-analyze-document.ts
+
+./node_modules/.pnpm/require-in-the-middle@7.5.2/node_modules/require-in-the-middle/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/.pnpm/require-in-the-middle@7.5.2/node_modules/require-in-the-middle/index.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+./node_modules/.pnpm/@opentelemetry+instrumentation@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+./node_modules/.pnpm/@opentelemetry+sdk-node@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/sdk-node/build/src/sdk.js
+./node_modules/.pnpm/@opentelemetry+sdk-node@0.52.1_@opentelemetry+api@1.9.0/node_modules/@opentelemetry/sdk-node/build/src/index.js
+./node_modules/.pnpm/@genkit-ai+core@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0__ayuwo7uovu3jia6oyvlu26duty/node_modules/@genkit-ai/core/lib/tracing/node-telemetry-provider.js
+./node_modules/.pnpm/@genkit-ai+core@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0__ayuwo7uovu3jia6oyvlu26duty/node_modules/@genkit-ai/core/lib/node.js
+./node_modules/.pnpm/genkit@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0/node_modules/genkit/lib/common.js
+./node_modules/.pnpm/genkit@1.22.0_@google-cloud+firestore@7.11.6_firebase-admin@12.7.0_firebase@11.10.0/node_modules/genkit/lib/index.mjs
+./src/ai/genkit.ts
+./src/app/api/ai/chat/route.ts
+
+
+
+Retrying 1/3...
+ ✓ Compiled successfully in 43s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/components/layout/sidebar-nav.tsx:67:63
+Type error: Cannot find name 'User'.
+
+[0m [90m 65 |[39m ]
+ [90m 66 |[39m
+[31m[1m>[22m[39m[90m 67 |[39m [36mexport[39m [36mfunction[39m [33mSidebarNav[39m({ user[33m,[39m isSheet [33m=[39m [36mfalse[39m }[33m:[39m { user[33m:[39m [33mUser[39m[33m,[39m isSheet[33m?[39m[33m:[39m boolean }) {
+ [90m    |[39m                                                               [31m[1m^[22m[39m
+ [90m 68 |[39m   [36mconst[39m pathname [33m=[39m usePathname()[33m;[39m
+ [90m 69 |[39m
+ [90m 70 |[39m   [36mconst[39m isActive [33m=[39m (path[33m:[39m string) [33m=>[39m {[0m
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

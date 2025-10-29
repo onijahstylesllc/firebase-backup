@@ -7,23 +7,23 @@ import { ai } from '@/ai/genkit';
 
 // Import the schema from the chat flow
 const ChatWithDocumentInputSchema = z.object({
-  documentImage: z.string().optional().describe("A data URI of the document page image. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
-  message: z.string().describe('The user's message.'),
+  documentImage: z.string().optional().describe("A data URI of the document page image. Expected format: data:<mimetype>;base64,<encoded_data>."),
+  message: z.string().describe("The user's message."),
   history: z.array(z.object({
     role: z.enum(['user', 'model']),
     content: z.array(z.object({ text: z.string() })),
-  })).optional().describe('The chat history.'),
+  })).optional().describe("The chat history."),
   personalization: z.object({
     role: z.string().optional(),
     tone: z.string().optional(),
     outputFormat: z.string().optional(),
-  }).optional().describe('User personalization settings.')
+  }).optional().describe("User personalization settings.")
 });
 
 const ChatWithDocumentOutputSchema = z.object({
   response: z
     .string()
-    .describe('The AI's response to the user's message.'),
+    .describe("The AI response to the user message."),
 });
 
 // Define the prompt (same as in the flow)
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
   try {
     // Create Supabase client for server-side auth
     const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = createRouteHandlerClient({ cookies: () => Promise.resolve(cookieStore) });
 
     // Verify authentication
     const {
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     // Get user identifier for rate limiting (prefer user ID, fallback to IP)
     const userId = session.user.id;
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const identifier = userId || ip;
 
     // Apply rate limiting

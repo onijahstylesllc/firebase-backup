@@ -1,11 +1,10 @@
 'use client';
-import { createClient } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  const supabase = createClient();
 
   useEffect(() => {
     const fetchUser = async () => {
