@@ -53,8 +53,22 @@ export function NewDocumentDialog({ open, onOpenChange, initialName, initialCont
         return;
     }
 
+    let sanitizedName: string;
+    try {
+      const { sanitizeTextInput, sanitizeFilename } = await import('@/lib/security/sanitize');
+      const cleanName = sanitizeTextInput(docName, 255);
+      sanitizedName = sanitizeFilename(cleanName.endsWith('.pdf') ? cleanName : `${cleanName}.pdf`);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid document name',
+        description: 'Document name contains invalid characters',
+      });
+      return;
+    }
+
     const newDoc = {
-        filename: docName.endsWith('.pdf') ? docName : `${docName}.pdf`,
+        filename: sanitizedName,
         user_id: user.id,
         uploadDate: new Date().toISOString(),
         fileSize: 0,
@@ -73,7 +87,6 @@ export function NewDocumentDialog({ open, onOpenChange, initialName, initialCont
             title: 'Error creating document',
             description: error.message,
         });
-        console.error('Error inserting document:', error);
         return;
     }
 
