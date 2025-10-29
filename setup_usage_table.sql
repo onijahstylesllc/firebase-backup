@@ -11,6 +11,9 @@ CREATE TABLE IF NOT EXISTS public.usage (
 -- Enable Row Level Security for the 'usage' table
 ALTER TABLE IF EXISTS public.usage ENABLE ROW LEVEL SECURITY;
 
+-- NOTE: For complete RLS policies including INSERT/UPDATE/DELETE,
+-- please apply supabase/policies/usage_rls.sql
+
 -- Drop the policy if it exists, then create it
 DROP POLICY IF EXISTS "Enable read access for own usage data" ON public.usage;
 CREATE POLICY "Enable read access for own usage data"

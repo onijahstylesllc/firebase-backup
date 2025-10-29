@@ -1,16 +1,35 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
+import { generateSummary } from '../_shared/summarizer.ts'
 
-import { createClient } from '@supabase/supabase-js'
-import { summarizeMeetingContext } from '../../src/ai/flows/ai-summarize-meeting-context'
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || 'https://pszmwgpjwuprytrahkro.supabase.co',
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
-self.addEventListener('message', async (event) => {
-  const { documentId } = event.data
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
 
   try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables')
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
+
+    const { documentId } = await req.json()
+
+    if (!documentId) {
+      return new Response(
+        JSON.stringify({ error: 'Missing documentId' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // 1. Update document status to 'in-progress'
     await supabase
       .from('documents')
@@ -28,11 +47,9 @@ self.addEventListener('message', async (event) => {
       throw new Error('Failed to fetch document content.')
     }
 
-    // 3. Run summarization
-    const { summary } = await summarizeMeetingContext({
-        documentContent: doc.content || `This is the content of the document named ${doc.filename}. In a real application, the full text would be extracted and passed here.`,
-        meetingTranscript: ''
-    });
+    // 3. Generate summary
+    const documentContent = doc.content || `This is the content of the document named ${doc.filename}. In a real application, the full text would be extracted and passed here.`
+    const summary = await generateSummary(documentContent, doc.filename)
 
     // 4. Update document with summary and mark as complete
     await supabase
@@ -45,16 +62,38 @@ self.addEventListener('message', async (event) => {
       })
       .eq('id', documentId)
 
-    self.postMessage({ success: true })
+    return new Response(
+      JSON.stringify({ success: true, summary }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
   } catch (error) {
-    // Handle errors and update document status to 'failed'
-    await supabase
-      .from('documents')
-      .update({ processingStatus: 'failed' })
-      .eq('id', documentId)
+    console.error('Error processing document:', error)
 
-    if (error instanceof Error) {
-        self.postMessage({ success: false, error: error.message })
+    // Try to update document status to 'failed' if we have documentId
+    try {
+      const { documentId } = await req.json()
+      if (documentId) {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')
+        const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+        
+        if (supabaseUrl && supabaseServiceRoleKey) {
+          const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
+          await supabase
+            .from('documents')
+            .update({ processingStatus: 'failed' })
+            .eq('id', documentId)
+        }
+      }
+    } catch (e) {
+      console.error('Error updating document status:', e)
     }
+
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
   }
 })
