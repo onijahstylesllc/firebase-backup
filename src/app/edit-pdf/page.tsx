@@ -2,7 +2,6 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { UploadFile } from "@/components/UploadFile";
 
 export default function EditPdfPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -16,7 +15,14 @@ export default function EditPdfPage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Edit PDF</h1>
-      <UploadFile onFileChange={handleFileChange} />
+      <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg">
+        <input
+          type="file"
+          onChange={handleFileChange}
+          accept=".pdf"
+          className="mb-4"
+        />
+      </div>
       {file && (
         <div className="mt-4">
           <h2 className="text-xl font-semibold">Selected File:</h2>

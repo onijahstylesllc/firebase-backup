@@ -13,8 +13,11 @@ import {
 } from '@/components/ui/carousel';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import placeholderImages from '@/lib/placeholder-images.json';
-import { type EmblaCarouselType, type EmblaPluginType } from 'embla-carousel-react';
+import { type UseEmblaCarouselType } from 'embla-carousel-react';
 import { TestimonialCarouselSkeleton } from './testimonial-carousel-skeleton';
+
+type EmblaCarouselType = UseEmblaCarouselType[1];
+type EmblaPluginType = any;
 
 const testimonials = [
     {

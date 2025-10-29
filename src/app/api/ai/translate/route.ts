@@ -7,12 +7,12 @@ import { ai } from '@/ai/genkit';
 
 // Import the schema from the translate flow
 const TranslateTextWithAIInputSchema = z.object({
-  text: z.string().describe('The text to be translated.'),
-  targetLanguage: z.string().describe('The target language for the translation.'),
+  text: z.string().describe("The text to be translated."),
+  targetLanguage: z.string().describe("The target language for the translation."),
 });
 
 const TranslateTextWithAIOutputSchema = z.object({
-  translatedText: z.string().describe('The translated text.'),
+  translatedText: z.string().describe("The translated text."),
 });
 
 // Define the prompt (same as in the flow)
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   try {
     // Create Supabase client for server-side auth
     const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = createRouteHandlerClient({ cookies: () => Promise.resolve(cookieStore) });
 
     // Verify authentication
     const {
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Get user identifier for rate limiting
     const userId = session.user.id;
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const identifier = userId || ip;
 
     // Apply rate limiting

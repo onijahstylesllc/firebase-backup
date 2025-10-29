@@ -1,0 +1,41 @@
+
+> nextn@0.1.0 build /home/engine/project
+> NODE_ENV=production next build && pnpm run verify:bundle
+
+ ⚠ Invalid next.config.mjs options detected: 
+ ⚠     Unrecognized key(s) in object: 'swcMinify'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+   ▲ Next.js 15.5.6
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./src/app/api/ai/chat/route.ts
+Error:   [31mx[0m Expected ',', got 's'
+    ,-[[36;1;4m/home/engine/project/src/app/api/ai/chat/route.ts[0m:11:1]
+ [2m 8[0m | // Import the schema from the chat flow
+ [2m 9[0m | const ChatWithDocumentInputSchema = z.object({
+ [2m10[0m |   documentImage: z.string().optional().describe("A data URI of the document page image. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
+ [2m11[0m |   message: z.string().describe('The user's message.'),
+    : [35;1m                                         ^[0m
+ [2m12[0m |   history: z.array(z.object({
+ [2m13[0m |     role: z.enum(['user', 'model']),
+ [2m14[0m |     content: z.array(z.object({ text: z.string() })),
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/ai/chat/route.ts
+
+
+> Build failed because of webpack errors
+ ELIFECYCLE  Command failed with exit code 1.

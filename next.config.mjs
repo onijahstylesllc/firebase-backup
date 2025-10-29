@@ -86,6 +86,17 @@ function getSecurityHeaders() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable X-Powered-By header for security
+  poweredByHeader: false,
+  
+  // Disable production source maps to prevent code exposure
+  productionBrowserSourceMaps: false,
+  
+  // Disable experimental server source maps
+  experimental: {
+    serverSourceMaps: false,
+  },
+  
   async headers() {
     const securityHeaders = getSecurityHeaders();
     
