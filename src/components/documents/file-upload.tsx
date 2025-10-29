@@ -4,7 +4,9 @@
 import React, { useRef, ReactNode } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
-
+import { sanitizeFilename, generateSafeStoragePath } from '@/lib/security/sanitize';
+import { validateDocumentFile } from '@/lib/security/validation';
+import { toast } from '@/hooks/use-toast';
 
 export interface FileUploadStatus {
   id: string;
@@ -36,7 +38,9 @@ export function FileUpload({
       const user = (await supabase.auth.getUser()).data.user;
       if (!user) throw new Error('User not authenticated');
 
-      const filePath = `public/${user.id}/${upload.id}-${upload.file.name}`;
+      const sanitizedFilename = sanitizeFilename(upload.file.name);
+      const filePath = generateSafeStoragePath(user.id, upload.id, sanitizedFilename);
+      
       const { error: uploadError } = await supabase.storage
         .from('documents')
         .upload(filePath, upload.file, {
@@ -53,7 +57,7 @@ export function FileUpload({
 
       const { error: dbError } = await supabase.from('documents').insert([
         {
-          filename: upload.file.name,
+          filename: sanitizedFilename,
           owner: user.email,
           uploadDate: new Date().toISOString(),
           fileSize: upload.file.size,
@@ -69,8 +73,8 @@ export function FileUpload({
 
       onUploadStatusChange(upload.id, 'completed');
     } catch (error: any) {
-      console.error('Upload failed:', error);
-      onUploadStatusChange(upload.id, 'failed', error.message);
+      const errorMessage = error.message || 'Upload failed';
+      onUploadStatusChange(upload.id, 'failed', errorMessage);
     }
   };
 
@@ -78,18 +82,33 @@ export function FileUpload({
     const files = event.target.files;
     if (!files) return;
     
-    const newUploads: FileUploadStatus[] = Array.from(files).map(file => {
+    const validUploads: FileUploadStatus[] = [];
+    
+    for (const file of Array.from(files)) {
+      const validation = validateDocumentFile(file);
+      
+      if (!validation.valid) {
+        toast({
+          variant: 'destructive',
+          title: 'Upload failed',
+          description: validation.error || 'Invalid file',
+        });
+        continue;
+      }
+      
       const id = uuidv4();
-      return {
+      validUploads.push({
         id,
         file,
         status: 'uploading',
         progress: 0,
-      };
-    });
+      });
+    }
 
-    onNewUploads(newUploads);
-    newUploads.forEach(uploadFile);
+    if (validUploads.length > 0) {
+      onNewUploads(validUploads);
+      validUploads.forEach(uploadFile);
+    }
     
     if(fileInputRef.current) {
         fileInputRef.current.value = '';
